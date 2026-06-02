@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Debunking Engine | Verifica Notizie</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <title>Debunking Engine | Verifica Notizie & Foto</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,700;0,900;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg:          #0d0f14;
@@ -21,6 +21,10 @@
       --verdict-falso:  #ef4444;
       --verdict-parziale: #fb923c;
       --verdict-sconosciuto: #7a8499;
+
+      --verdict-img-ai: #ef4444;
+      --verdict-img-manipolata: #fb923c;
+      --verdict-img-originale: #34d399;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,7 +42,6 @@
       overflow-x: hidden;
     }
 
-    /* OVERLAY SCURO E NOISE TEXTURE PER LEGGIBILITÀ */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -67,7 +70,6 @@
       margin-bottom: 1.5rem;
     }
 
-    /* Stili per il Logo */
     .main-logo {
       max-width: 90vw;
       width: 260px;
@@ -117,7 +119,6 @@
       color: var(--accent);
     }
 
-    /* Icona Istruzioni */
     .help-icon {
       display: inline-flex;
       align-items: center;
@@ -275,6 +276,13 @@
     }
     .search-subtitle em { font-style: normal; color: var(--accent); }
 
+    /* --- TABS SYSTEM --- */
+    .tabs-container { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .tab-btn { background: rgba(19, 22, 30, 0.6); color: var(--muted); border: 1px solid var(--border); padding: 0.8rem 2rem; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
+    .tab-btn:hover { background: rgba(26, 30, 40, 0.9); color: var(--text); }
+    .tab-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); box-shadow: 0 4px 15px rgba(232, 197, 71, 0.3); }
+
+    /* MODULO TESTO */
     .search-box {
       margin: 0 auto 1.5rem auto;
       max-width: 800px;
@@ -357,6 +365,27 @@
       color: var(--accent);
     }
 
+    /* MODULO IMMAGINI */
+    .image-box { margin: 0 auto 1.5rem auto; max-width: 800px; background: rgba(19, 22, 30, 0.85); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: none; }
+    .upload-zone { border: 2px dashed var(--border); border-radius: 8px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(13, 15, 20, 0.5); margin-bottom: 1rem; }
+    .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent3); background: rgba(167, 139, 250, 0.05); }
+    .upload-icon { font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.8; }
+    .upload-text { font-size: 1.1rem; color: var(--text); }
+    .upload-subtext { font-size: 0.85rem; color: var(--muted); font-family: 'IBM Plex Mono', monospace; margin-top: 0.5rem; display: block; }
+    
+    .editor-container { display: none; flex-direction: column; align-items: center; gap: 1rem; width: 100%; margin-bottom: 1.5rem; }
+    .canvas-wrapper { position: relative; max-width: 100%; max-height: 500px; overflow: hidden; border-radius: 8px; border: 1px solid var(--border); background: #000; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+    #imagePreview { display: block; max-width: 100%; max-height: 500px; object-fit: contain; }
+    #cropCanvasOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+    
+    .editor-toolbar { display: flex; gap: 1rem; width: 100%; justify-content: space-between; flex-wrap: wrap; }
+    .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-size: 0.9rem; padding: 0.8rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+    .btn-secondary:hover { background: rgba(26, 30, 40, 0.85); border-color: var(--text); }
+    .btn-action-img { background: var(--accent3); color: #000; border: none; font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 1rem; padding: 1rem 2rem; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: transform 0.2s, box-shadow 0.2s; }
+    .btn-action-img:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(167, 139, 250, 0.3); }
+    .crop-hint { font-size: 0.85rem; color: var(--accent2); font-family: 'IBM Plex Mono', monospace; width: 100%; text-align: center; margin-bottom: 0.5rem; }
+
+    /* Pannelli di caricamento ed errore */
     .state-panel {
       display: none;
       margin: 2rem auto;
@@ -385,7 +414,8 @@
     .error-panel { border-color: var(--verdict-falso); background: rgba(239, 68, 68, 0.05); }
     .error-panel h3 { color: var(--verdict-falso); }
     
-    #results-area { display: none; max-width: 900px; margin: 0 auto; animation: fadeIn 0.5s ease; }
+    /* Risultati condivisi */
+    #results-area, #img-results-area { display: none; max-width: 900px; margin: 0 auto; animation: fadeIn 0.5s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .verdict-banner {
@@ -447,6 +477,22 @@
     }
     .card:hover .btn-open { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
+    /* Stili per Griglia Analisi Immagini */
+    .img-analysis-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1.5rem; margin-bottom: 2rem; }
+    .confidence-box { background: rgba(19, 22, 30, 0.85); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+    .confidence-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; font-family: 'IBM Plex Mono', monospace; margin-bottom: 1rem; border: 8px solid var(--border); }
+    .confidence-label { font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    
+    .forensic-details { background: rgba(19, 22, 30, 0.85); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; }
+    .forensic-details h3 { font-family: 'IBM Plex Mono', monospace; font-size: .85rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent3); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+    .forensic-details p { font-size: 1.05rem; color: var(--text); line-height: 1.7; margin-bottom: 1.5rem; }
+    
+    .anomalies-list { list-style: none; padding: 0; }
+    .anomalies-list li { background: rgba(239, 68, 68, 0.1); border-left: 3px solid var(--verdict-falso); margin-bottom: 0.5rem; padding: 0.8rem 1rem; font-size: 0.95rem; display: flex; gap: 0.8rem; align-items: flex-start; }
+    .anomalies-list li::before { content: '⚠️'; font-size: 1rem; }
+    .anomalies-list.clean li { background: rgba(52, 211, 153, 0.1); border-left: 3px solid var(--verdict-vero); }
+    .anomalies-list.clean li::before { content: '✅'; }
+
     .new-search-wrapper { margin-top: 4rem; text-align: center; }
     .btn-new-search { background: transparent; color: var(--text); border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 0.9rem; padding: 0.8rem 2rem; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; }
     .btn-new-search:hover { background: rgba(26, 30, 40, 0.85); border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
@@ -458,8 +504,9 @@
       .or-divider { justify-content: center; padding: 1rem 0; }
       .api-settings-header { white-space: normal; text-align: center; justify-content: center; }
       .external-tool-btn { width: 100%; min-height: 100px; }
-      .grid { grid-template-columns: 1fr; }
+      .grid, .img-analysis-grid { grid-template-columns: 1fr; }
       .verdict-banner { font-size: 1.5rem; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+      .editor-toolbar { flex-direction: column; }
     }
   </style>
 </head>
@@ -468,7 +515,7 @@
 
   <header>
     <div class="eyebrow">Sistema di Analisi e Verifica</div>
-    <img src="logoDE.jpg" alt="Debunking Engine Logo" class="main-logo" />
+    <img src="logoDE.jpg" alt="Debunking Engine Logo" class="main-logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNjAiIGhlaWdodD0iODAiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxYTFlMjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iI2U4YzU0NyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5MT0dPPC90ZXh0Pjwvc3ZnPg==';"/>
   </header>
 
   <div class="top-controls-wrapper">
@@ -489,7 +536,7 @@
     
     <div class="or-divider">oppure ...</div>
 
-    <a href="https://alandark.github.io/Strumenti-di-Ricerca/" class="external-tool-btn">
+    <a href="https://alandark.github.io/Strumenti-di-Ricerca/" class="external-tool-btn" target="_blank">
       <div class="external-tool-content">
         <div class="external-tool-title">Usa strumenti di ricerca</div>
         <div class="external-tool-badge">Non richiede API</div>
@@ -498,62 +545,100 @@
   </div>
 
   <div class="search-header-container">
-    <h2 class="search-title"><em>Debunking</em> Notizie</h2>
-    <p class="search-subtitle">
-      Incolla il link a una <em>notizia</em> o scrivi il tuo <em>dubbio</em>. Il sistema interrogherà fonti certificate e agenzie di stampa per restituirti un'analisi in tempo reale.
-    </p>
+    <h2 class="search-title"><em>Debunking</em> Engine</h2>
   </div>
 
-  <div class="search-box">
-    <form id="searchForm" class="search-form">
-      <div class="search-input-wrapper">
-        <textarea id="searchInput" placeholder="Es: È vero che la Commissione Europea ha vietato la vendita di auto a benzina dal 2025? Oppure incolla un URL..." required></textarea>
-        <button type="button" id="clearSearchBtn" class="btn-clear-search" title="Cancella testo">✖</button>
+  <!-- TABS PER CAMBIO MODALITÀ -->
+  <div class="tabs-container">
+    <button class="tab-btn active" id="tabText">Verifica Notizia / Link</button>
+    <button class="tab-btn" id="tabImage">Analisi Immagine (Forense)</button>
+  </div>
+
+  <!-- DESCRIZIONE DINAMICA DELLA SCHEDA ATTIVA -->
+  <p id="tabDescription" class="search-subtitle"></p>
+
+  <!-- MODULO TESTO -->
+  <div id="moduleText">
+    <div class="search-box">
+      <form id="searchForm" class="search-form">
+        <div class="search-input-wrapper">
+          <textarea id="searchInput" placeholder="Es: È vero che la Commissione Europea ha vietato la vendita di auto a benzina dal 2025? Oppure incolla un URL..." required></textarea>
+          <button type="button" id="clearSearchBtn" class="btn-clear-search" title="Cancella testo">✖</button>
+        </div>
+        <button type="submit" id="searchBtn" class="search-btn">Verifica Notizia →</button>
+      </form>
+    </div>
+
+    <!-- Pulsantino Ricerca Manuale Originale -->
+    <div id="manualSearchToggleWrapper" style="max-width: 800px; margin: 0 auto; text-align: right; margin-top: -1rem; margin-bottom: 3rem;">
+      <button type="button" id="btnManualToggle" class="btn-manual-toggle">Ricerca manuale</button>
+    </div>
+
+    <!-- Modulo Ricerca Manuale Avanzata Originale -->
+    <div id="advancedManualSearch" class="summary-box" style="display: none; margin-bottom: 2rem;">
+      <h3 style="color: var(--accent2); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🔍 Ricerca Manuale Avanzata</h3>
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="search-input-wrapper">
+          <input type="text" id="advManualInput" placeholder="Inserisci parole chiave da cercare..." class="api-input" style="width: 100%; max-width: none; font-size: 1rem; padding: 0.8rem 2.5rem 0.8rem 1rem;" />
+          <button type="button" id="clearAdvManualBtn" class="btn-clear-api" title="Cancella testo" style="right: 10px;">✖</button>
+        </div>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <select id="advCategorySelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
+            <option value="">-- Seleziona Categoria --</option>
+            <option value="FACT_CHECKING">Fact-Checking</option>
+            <option value="STUDI">Studi Accademici e Medici</option>
+            <option value="AGENZIE">Agenzie di Stampa</option>
+            <option value="DATI">Dati e Documenti Ufficiali</option>
+            <option value="ASSOCIAZIONI">Associazioni e ONG</option>
+          </select>
+          <select id="advSiteSelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
+            <option value="">-- Seleziona prima una Categoria --</option>
+          </select>
+          <button type="button" id="advSearchGoBtn" class="search-btn" style="padding: 0.8rem 2rem;">Avvia Ricerca su Google ↗</button>
+        </div>
       </div>
-      <button type="submit" id="searchBtn" class="search-btn">Verifica Notizia →</button>
-    </form>
+    </div>
   </div>
 
-  <!-- Pulsantino allineato a destra sotto il box di ricerca -->
-  <div id="manualSearchToggleWrapper" style="max-width: 800px; margin: 0 auto; text-align: right; margin-top: -1rem; margin-bottom: 3rem;">
-    <button type="button" id="btnManualToggle" class="btn-manual-toggle">Ricerca manuale</button>
-  </div>
+  <!-- MODULO IMMAGINI -->
+  <div id="moduleImage" class="image-box">
+    <!-- Zona Upload -->
+    <div id="uploadZone" class="upload-zone">
+      <span class="upload-icon">📸</span>
+      <span class="upload-text">Trascina qui una foto o clicca per caricare</span>
+      <span class="upload-subtext">Supporta JPG, PNG, WEBP. Analisi AI su manipolazione e metadati.</span>
+      <input type="file" id="imageInput" accept="image/png, image/jpeg, image/webp" style="display: none;" />
+    </div>
 
-  <!-- Modulo Ricerca Manuale Avanzata (si muoverà dinamicamente) -->
-  <div id="advancedManualSearch" class="summary-box" style="display: none; margin-bottom: 2rem;">
-    <h3 style="color: var(--accent2); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🔍 Ricerca Manuale Avanzata</h3>
-    <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <div class="search-input-wrapper">
-        <input type="text" id="advManualInput" placeholder="Inserisci parole chiave da cercare..." class="api-input" style="width: 100%; max-width: none; font-size: 1rem; padding: 0.8rem 2.5rem 0.8rem 1rem;" />
-        <button type="button" id="clearAdvManualBtn" class="btn-clear-api" title="Cancella testo" style="right: 10px;">✖</button>
+    <!-- Zona Editor / Ritaglio -->
+    <div id="editorZone" class="editor-container">
+      <div class="crop-hint">Trascina il mouse sulla foto per selezionare un dettaglio da analizzare (Opzionale)</div>
+      <div class="canvas-wrapper">
+        <img id="imagePreview" src="" alt="Anteprima" />
+        <canvas id="cropCanvasOverlay"></canvas>
       </div>
-      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-        <select id="advCategorySelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
-          <option value="">-- Seleziona Categoria --</option>
-          <option value="FACT_CHECKING">Fact-Checking</option>
-          <option value="STUDI">Studi Accademici e Medici</option>
-          <option value="AGENZIE">Agenzie di Stampa</option>
-          <option value="DATI">Dati e Documenti Ufficiali</option>
-          <option value="ASSOCIAZIONI">Associazioni e ONG</option>
-        </select>
-        <select id="advSiteSelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
-          <option value="">-- Seleziona prima una Categoria --</option>
-        </select>
-        <button type="button" id="advSearchGoBtn" class="search-btn" style="padding: 0.8rem 2rem;">Avvia Ricerca su Google ↗</button>
+      <div class="editor-toolbar">
+        <div>
+          <button type="button" id="btnCrop" class="btn-secondary" style="display: none;">✂️ Conferma Ritaglio</button>
+          <button type="button" id="btnResetCrop" class="btn-secondary" style="display: none;">↺ Annulla Ritaglio</button>
+          <button type="button" id="btnNewImage" class="btn-secondary">🗑️ Cambia Foto</button>
+        </div>
+        <button type="button" id="btnAnalyzeImage" class="btn-action-img">Avvia Analisi Forense 🔍</button>
       </div>
     </div>
   </div>
 
   <div id="loadingPanel" class="state-panel">
-    <div class="loader"></div>
-    <div class="state-text">Analisi dei fatti in corso...<br><span style="color:var(--accent2)">Gemini sta incrociando i dati con le fonti affidabili.</span></div>
+    <div class="loader" id="loaderSpinner"></div>
+    <div class="state-text" id="loadingText">Analisi in corso...<br><span style="color:var(--accent2)">Interrogazione AI e Google Search in esecuzione.</span></div>
   </div>
 
   <div id="errorPanel" class="state-panel error-panel">
     <h3>Attenzione</h3>
-    <div id="errorText" class="state-text">Errore durante la comunicazione con Gemini. Riprova.</div>
+    <div id="errorText" class="state-text">Errore durante la comunicazione con l'API. Riprova.</div>
   </div>
 
+  <!-- RISULTATI TESTO -->
   <div id="results-area">
     <div id="verdictBanner" class="verdict-banner verdict-VERO">
       <span>Verdetto:</span>
@@ -577,84 +662,89 @@
     </div>
 
     <div id="factCheckContainer" style="display: none;">
-      <h2 class="section-title"><span class="section-icon">✅</span> Riscontri parole chiave di Google fact checker</h2>
-      
-      <!-- Unico box blu che contiene sia la barra di ricerca che i risultati -->
+      <h2 class="section-title"><span class="section-icon">✅</span> Riscontri Google Fact Checker</h2>
       <div style="background: rgba(19, 22, 30, 0.85); backdrop-filter: blur(5px); border: 1px solid var(--accent2); border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(79, 195, 247, 0.05);">
-        
-        <!-- Barra di ricerca manuale interna -->
         <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(79, 195, 247, 0.2);">
-          <!-- INIZIO MODIFICA: Aggiunto wrapper search-input-wrapper per posizionare la "X" -->
           <div class="search-input-wrapper" style="flex: 1; min-width: 200px;">
             <input type="text" id="manualFcInput" class="api-input" placeholder="Cerca manualmente nel database Google Fact Check..." style="width: 100%; max-width: none; border-color: rgba(79, 195, 247, 0.3);" />
             <button type="button" id="clearManualFcBtn" class="btn-clear-api" title="Cancella testo" style="right: 10px;">✖</button>
           </div>
-          <!-- FINE MODIFICA -->
           <button type="button" id="manualFcBtn" class="search-btn" style="padding: 0.6rem 1.5rem; font-size: 0.9rem; background: rgba(79, 195, 247, 0.1); color: var(--accent2); border: 1px solid var(--accent2);">Cerca 🔍</button>
         </div>
-
-        <!-- Qui verranno iniettati i risultati -->
         <div id="factCheckResultsList"></div>
       </div>
     </div>
     
     <div class="new-search-wrapper">
-      <button type="button" id="newSearchBtn" class="btn-new-search">⟲ Nuova Ricerca</button>
+      <button type="button" class="btn-new-search reset-all-btn">⟲ Nuova Ricerca</button>
+    </div>
+  </div>
+
+  <!-- RISULTATI IMMAGINE -->
+  <div id="img-results-area">
+    <div id="imgVerdictBanner" class="verdict-banner" style="border-color: var(--verdict-img-ai);">
+      <span>Esito Forense:</span>
+      <span id="imgVerdictLabel" style="color: var(--verdict-img-ai);">GENERATA_CON_AI</span>
+    </div>
+
+    <div class="img-analysis-grid">
+      <!-- Percentuale -->
+      <div class="confidence-box">
+        <div id="imgConfidenceCircle" class="confidence-circle" style="border-color: var(--verdict-img-ai); color: var(--text);">
+          <span id="imgConfidenceValue">98</span><span style="font-size: 1.5rem;">%</span>
+        </div>
+        <span class="confidence-label">Livello di Certezza</span>
+      </div>
+
+      <!-- Dettagli -->
+      <div class="forensic-details">
+        <h3>🔬 Analisi Dettagliata</h3>
+        <p id="imgSummaryText">Caricamento in corso...</p>
+        
+        <h3 style="margin-top: 1.5rem;">⚠️ Anomalie / Artefatti Rilevati</h3>
+        <ul id="imgAnomaliesList" class="anomalies-list">
+        </ul>
+      </div>
+    </div>
+    
+    <div class="summary-box" style="border-color: rgba(167, 139, 250, 0.4);">
+      <h3 style="color: var(--accent3)">💾 Inferenza Metadati Visivi</h3>
+      <p id="imgMetadataText">Caricamento...</p>
+    </div>
+
+    <div class="new-search-wrapper">
+      <button type="button" class="btn-new-search reset-all-btn">⟲ Nuova Analisi</button>
     </div>
   </div>
 
   <footer>
-    <span>Usa Gemini AI & Google Search Grounding</span>
+    <span>Usa Gemini AI (gemini-2.5-flash) & Google Search Grounding</span>
     <span>Siti interrogati: Agenzie di Stampa, Facta, PubMed, PagellaPolitica, MedBunker...</span>
   </footer>
 
 </div>
 
 <script>
-  const apiKey = ""; 
-  const apiKeyInput = document.getElementById('apiKeyInput');
-  const clearApiBtn = document.getElementById('clearApiBtn');
-  
-  const factCheckApiKeyInput = document.getElementById('factCheckApiKeyInput');
-  const clearFactCheckApiBtn = document.getElementById('clearFactCheckApiBtn');
+  // --- IMPOSTAZIONI MODELLO API ---
+  const GEMINI_MODEL = "gemini-2.5-flash";
 
-  // Ripristino chiavi
+  // --- GESTIONE API KEYS ---
+  const apiKeyInput = document.getElementById('apiKeyInput');
+  const factCheckApiKeyInput = document.getElementById('factCheckApiKeyInput');
+  
   const savedKey = localStorage.getItem('geminiApiKey');
   if (savedKey) apiKeyInput.value = savedKey;
-
   apiKeyInput.addEventListener('change', (e) => localStorage.setItem('geminiApiKey', e.target.value.trim()));
-  clearApiBtn.addEventListener('click', () => { localStorage.removeItem('geminiApiKey'); apiKeyInput.value = ''; });
+  document.getElementById('clearApiBtn').addEventListener('click', () => { localStorage.removeItem('geminiApiKey'); apiKeyInput.value = ''; });
   const getApiKey = () => apiKeyInput.value.trim();
 
   const savedFcKey = localStorage.getItem('fcApiKey');
   if (savedFcKey) factCheckApiKeyInput.value = savedFcKey;
-
   factCheckApiKeyInput.addEventListener('change', (e) => localStorage.setItem('fcApiKey', e.target.value.trim()));
-  clearFactCheckApiBtn.addEventListener('click', () => { localStorage.removeItem('fcApiKey'); factCheckApiKeyInput.value = ''; });
+  document.getElementById('clearFactCheckApiBtn').addEventListener('click', () => { localStorage.removeItem('fcApiKey'); factCheckApiKeyInput.value = ''; });
   const getFcApiKey = () => factCheckApiKeyInput.value.trim();
 
-  const systemPrompt = `Sei il 'Debunking Engine', uno strumento di fact-checking ultra-rigoroso.
-COMPITO:
-1. Analizza la notizia fornita (usa Google Search integrato se necessario).
-2. VERDETTO e SINTESI: Fornisci il verdetto (VERO, FALSO, PARZIALMENTE_FALSO, NESSUN_RISCONTRO) e una spiegazione.
-3. CATEGORIA: Scegli tra: "POLITICA", "ECONOMIA", "MEDICINA" (scienza/salute), "STORIA_MISTERO", "ATTUALITA".
-4. IS_VIRAL_HOAX: true o false. Bufala allarmistica/complottista? 'true'.
-5. KEYWORDS IT: 2-3 parole chiave in italiano.
-6. KEYWORDS EN: 2-3 parole chiave tradotte in inglese.
-7. FACT_CHECK_QUERY: 1-3 parole purissime (solo nomi propri o oggetto). Ottimizzato per query di database.
-
-REGOLE DI RISPOSTA (FONDAMENTALE):
-Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il verdetto" o "JSON:". Solo le parentesi graffe.
-{
-  "verdict": "VERO",
-  "summary": "...",
-  "category": "...",
-  "is_viral_hoax": false,
-  "keywords_it": "...",
-  "keywords_en": "...",
-  "fact_check_query": "..."
-}`;
-
+  // --- DATABASE ORIGINALI REINTEGRATI ---
   const sitesDatabase = {
     "AGENZIE_STAMPA": [
       { name: "ANSA", domain: "ansa.it", icon: "🗞️", lang: "it" },
@@ -763,14 +853,86 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     ]
   };
 
+  // --- GESTIONE TABS ---
+  const tabText = document.getElementById('tabText');
+  const tabImage = document.getElementById('tabImage');
+  const moduleText = document.getElementById('moduleText');
+  const moduleImage = document.getElementById('moduleImage');
+  const resultsArea = document.getElementById('results-area');
+  const imgResultsArea = document.getElementById('img-results-area');
+  const errorPanel = document.getElementById('errorPanel');
+  const loadingPanel = document.getElementById('loadingPanel');
+  const tabDescription = document.getElementById('tabDescription');
+  
+  let currentMode = 'TEXT';
+  let tabStates = { TEXT: 'INPUT', IMAGE: 'INPUT' };
+
+  function renderTabState() {
+    // Nascondi tutto prima di ricalcolare
+    moduleText.style.display = 'none';
+    moduleImage.style.display = 'none';
+    resultsArea.style.display = 'none';
+    imgResultsArea.style.display = 'none';
+    errorPanel.style.display = 'none';
+    loadingPanel.style.display = 'none';
+
+    const currentState = tabStates[currentMode];
+
+    if (currentMode === 'TEXT') {
+      tabText.classList.add('active'); tabImage.classList.remove('active');
+      
+      // Sottotitolo descrittivo per la verifica testi con parole chiave evidenziate in giallo
+      tabDescription.innerHTML = `Incolla il <em>link</em> a una notizia o scrivi il tuo <em>dubbio</em>. Il sistema interrogherà fonti certificate e agenzie di stampa per restituirti un'analisi in tempo reale.`;
+      
+      // Il modulo di input del testo è sempre visibile in alto
+      moduleText.style.display = 'block';
+
+      if (currentState === 'LOADING') loadingPanel.style.display = 'flex';
+      if (currentState === 'ERROR') errorPanel.style.display = 'flex';
+      if (currentState === 'RESULTS') resultsArea.style.display = 'block';
+    } else {
+      tabImage.classList.add('active'); tabText.classList.remove('active');
+      
+      // Sottotitolo descrittivo per l'analisi immagini con parole chiave evidenziate in giallo
+      tabDescription.innerHTML = `Carica una <em>foto</em> per esaminarne l'<em>autenticità</em>. Il modulo forense rileverà anomalie strutturali, artefatti generati da Intelligenze Artificiali (AI) o segni di fotoritocco ed editing digitale.`;
+      
+      // Il box immagine non è visibile durante il caricamento o i risultati
+      if (currentState === 'INPUT' || currentState === 'ERROR') {
+          moduleImage.style.display = 'block';
+      }
+
+      if (currentState === 'LOADING') loadingPanel.style.display = 'flex';
+      if (currentState === 'ERROR') errorPanel.style.display = 'flex';
+      if (currentState === 'RESULTS') imgResultsArea.style.display = 'block';
+    }
+  }
+
+  function switchTab(mode) {
+    currentMode = mode;
+    renderTabState();
+  }
+
+  tabText.addEventListener('click', () => switchTab('TEXT'));
+  tabImage.addEventListener('click', () => switchTab('IMAGE'));
+
+  document.querySelectorAll('.reset-all-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (currentMode === 'TEXT') {
+        document.getElementById('searchInput').value = '';
+        tabStates.TEXT = 'INPUT';
+      } else {
+        resetImageEditor();
+        tabStates.IMAGE = 'INPUT';
+      }
+      renderTabState();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // --- LOGICA TESTO & RICERCA MANUALE ORIGINALE ---
   const form = document.getElementById('searchForm');
   const input = document.getElementById('searchInput');
   const btn = document.getElementById('searchBtn');
-  const loadingPanel = document.getElementById('loadingPanel');
-  const errorPanel = document.getElementById('errorPanel');
-  const errorText = document.getElementById('errorText');
-  const resultsArea = document.getElementById('results-area');
-  const sourcesGrid = document.getElementById('sourcesGrid');
   
   const btnManualToggle = document.getElementById('btnManualToggle');
   const advancedManualSearch = document.getElementById('advancedManualSearch');
@@ -781,16 +943,44 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
 
   document.getElementById('clearSearchBtn').addEventListener('click', () => { input.value = ''; input.focus(); });
   document.getElementById('clearAdvManualBtn').addEventListener('click', () => { advManualInput.value = ''; advManualInput.focus(); });
-
-  // INIZIO MODIFICA: Aggiunto EventListener per il nuovo pulsante "X" nel Google Fact Check
   document.getElementById('clearManualFcBtn').addEventListener('click', () => { 
-    const manualFcInput = document.getElementById('manualFcInput');
-    manualFcInput.value = ''; 
-    manualFcInput.focus(); 
+    document.getElementById('manualFcInput').value = ''; 
+    document.getElementById('manualFcInput').focus(); 
   });
-  // FINE MODIFICA
 
-  // Funzione di ricerca manuale per Google Fact Check
+  // Toggle ricerca manuale
+  btnManualToggle.addEventListener('click', () => {
+    advancedManualSearch.style.display = advancedManualSearch.style.display === 'none' ? 'block' : 'none';
+    if (advancedManualSearch.style.display === 'block' && input.value.trim() !== '') {
+        advManualInput.value = input.value.trim();
+    }
+  });
+
+  // Categorie ricerca manuale
+  advCategorySelect.addEventListener('change', () => {
+    const cat = advCategorySelect.value;
+    advSiteSelect.innerHTML = '<option value="">-- Seleziona Sito --</option>';
+    if (cat && manualCategoriesDB[cat]) {
+        manualCategoriesDB[cat].forEach(site => {
+            const opt = document.createElement('option');
+            opt.value = site.domain; opt.textContent = site.name;
+            advSiteSelect.appendChild(opt);
+        });
+    } else {
+        advSiteSelect.innerHTML = '<option value="">-- Seleziona prima una Categoria --</option>';
+    }
+  });
+
+  document.getElementById('advSearchGoBtn').addEventListener('click', () => {
+    const query = advManualInput.value.trim();
+    const domain = advSiteSelect.value;
+    if (!query) return alert("Inserisci una parola chiave da cercare.");
+    let searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    if (domain) searchUrl += encodeURIComponent(` site:${domain}`);
+    window.open(searchUrl, '_blank');
+  });
+
+  // Fact Check manuale
   document.getElementById('manualFcBtn').addEventListener('click', async () => {
     const term = document.getElementById('manualFcInput').value.trim();
     const fcKey = getFcApiKey();
@@ -798,8 +988,7 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     if (!fcKey) return alert("Inserisci la API Key di Google Fact Check nelle impostazioni in alto.");
     
     const manualFcBtn = document.getElementById('manualFcBtn');
-    manualFcBtn.textContent = '...';
-    manualFcBtn.disabled = true;
+    manualFcBtn.textContent = '...'; manualFcBtn.disabled = true;
 
     try {
         const fcUrl = `https://factchecktools.googleapis.com/v1alpha1/claims:search?query=${encodeURIComponent(term)}&key=${fcKey}`;
@@ -819,79 +1008,33 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
         }
         renderFactCheckBox(allClaims, [term]);
     } catch (e) {
-        console.error("Errore Fact Check Manuale:", e);
-        alert("Errore durante la ricerca manuale.");
+        console.error("Errore Fact Check Manuale:", e); alert("Errore durante la ricerca manuale.");
     } finally {
-        manualFcBtn.textContent = 'Cerca 🔍';
-        manualFcBtn.disabled = false;
+        manualFcBtn.textContent = 'Cerca 🔍'; manualFcBtn.disabled = false;
     }
   });
 
-  document.getElementById('newSearchBtn').addEventListener('click', () => {
-    input.value = ''; 
-    resultsArea.style.display = 'none'; 
-    errorPanel.style.display = 'none';
-    
-    // INIZIO MODIFICA: Svuota anche la barra di ricerca manuale Fact Check quando si fa una "Nuova Ricerca"
-    document.getElementById('manualFcInput').value = '';
-    // FINE MODIFICA
+  // Esecuzione Analisi Testo Completa
+  const textSystemPrompt = `Sei il 'Debunking Engine', uno strumento di fact-checking ultra-rigoroso.
+COMPITO:
+1. Analizza la notizia fornita (usa Google Search integrato se necessario).
+2. VERDETTO e SINTESI: Fornisci il verdetto (VERO, FALSO, PARZIALMENTE_FALSO, NESSUN_RISCONTRO) e una spiegazione.
+3. CATEGORIA: Scegli tra: "POLITICA", "ECONOMIA", "MEDICINA" (scienza/salute), "STORIA_MISTERO", "ATTUALITA".
+4. IS_VIRAL_HOAX: true o false. Bufala allarmistica/complottista? 'true'.
+5. KEYWORDS IT: 2-3 parole chiave in italiano.
+6. KEYWORDS EN: 2-3 parole chiave tradotte in inglese.
+7. FACT_CHECK_QUERY: 1-3 parole purissime.
 
-    btnManualToggle.style.display = 'inline-block';
-    manualToggleWrapper.after(advancedManualSearch); // Riporta la tabella sotto il pulsante
-    advancedManualSearch.style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(() => input.focus(), 500);
-  });
-
-  btnManualToggle.addEventListener('click', () => {
-    advancedManualSearch.style.display = advancedManualSearch.style.display === 'none' ? 'block' : 'none';
-    if (advancedManualSearch.style.display === 'block' && input.value.trim() !== '') {
-        advManualInput.value = input.value.trim();
-    }
-  });
-
-  advCategorySelect.addEventListener('change', () => {
-    const cat = advCategorySelect.value;
-    advSiteSelect.innerHTML = '<option value="">-- Seleziona Sito --</option>';
-    if (cat && manualCategoriesDB[cat]) {
-        manualCategoriesDB[cat].forEach(site => {
-            const opt = document.createElement('option');
-            opt.value = site.domain;
-            opt.textContent = site.name;
-            advSiteSelect.appendChild(opt);
-        });
-    } else {
-        advSiteSelect.innerHTML = '<option value="">-- Seleziona prima una Categoria --</option>';
-    }
-  });
-
-  document.getElementById('advSearchGoBtn').addEventListener('click', () => {
-    const query = advManualInput.value.trim();
-    const domain = advSiteSelect.value;
-    if (!query) return alert("Inserisci una parola chiave da cercare.");
-    let searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
-    if (domain) searchUrl += encodeURIComponent(` site:${domain}`);
-    window.open(searchUrl, '_blank');
-  });
-
-  async function fetchWithRetry(url, options, retries = 5) {
-    const delays = [1000, 2000, 4000, 8000, 16000];
-    for (let i = 0; i < retries; i++) {
-      try {
-        const response = await fetch(url, options);
-        if (!response.ok) {
-          const errData = await response.json().catch(() => ({}));
-          const err = new Error(`Errore HTTP ${response.status}: ${JSON.stringify(errData)}`);
-          err.status = response.status;
-          throw err;
-        }
-        return await response.json();
-      } catch (error) {
-        if (error.status && error.status >= 400 && error.status < 500 && error.status !== 429) throw error;
-        if (i === retries - 1) throw error;
-        await new Promise(res => setTimeout(res, delays[i]));
-      }
-    }
-  }
+Rispondi ESCLUSIVAMENTE con JSON:
+{
+  "verdict": "VERO",
+  "summary": "...",
+  "category": "...",
+  "is_viral_hoax": false,
+  "keywords_it": "...",
+  "keywords_en": "...",
+  "fact_check_query": "..."
+}`;
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -900,19 +1043,22 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
 
     btnManualToggle.style.display = 'none';
     advancedManualSearch.style.display = 'none';
-    resultsArea.style.display = 'none'; errorPanel.style.display = 'none'; loadingPanel.style.display = 'flex';
+    
+    tabStates.TEXT = 'LOADING';
+    document.getElementById('loadingText').innerHTML = `Analisi in corso...<br><span style="color:var(--accent2)">Gemini sta incrociando i dati con le fonti affidabili.</span>`;
+    renderTabState();
+    
     btn.disabled = true; btn.textContent = 'Elaborazione AI...';
 
     try {
       const userKey = getApiKey();
-      const activeKey = userKey || apiKey;
-
-      const modelName = userKey ? "gemini-2.5-flash" : "gemini-2.5-flash-preview-09-2025";
-      const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`;
+      if (!userKey) throw new Error("Inserisci la tua API Key Gemini nelle impostazioni in alto.");
+      
+      const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${userKey}`;
 
       const payload = {
         contents: [{ parts: [{ text: `Utente chiede di verificare: "${query}". Analizza e restituisci il JSON richiesto.` }] }],
-        systemInstruction: { parts: [{ text: systemPrompt }] },
+        systemInstruction: { parts: [{ text: textSystemPrompt }] },
         tools: [{ google_search: {} }]
       };
 
@@ -920,16 +1066,10 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
         method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
       });
 
-      let textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!textResponse) throw new Error("Nessuna risposta valida dall'AI.");
-
-      const firstBrace = textResponse.indexOf('{');
-      const lastBrace = textResponse.lastIndexOf('}');
-      if (firstBrace === -1 || lastBrace === -1) throw new Error("Risposta AI non formattata in JSON.");
+      const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      const jsonResponse = extractJSON(textResponse);
       
-      const cleanJsonString = textResponse.substring(firstBrace, lastBrace + 1);
-      const jsonResponse = JSON.parse(cleanJsonString);
-      
+      // Fact check integration
       const fcKey = getFcApiKey();
       let factCheckData = null;
       let searchedQueriesList = [];
@@ -972,22 +1112,16 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
       renderResults(jsonResponse, factCheckData, fcKey, searchedQueriesList);
 
     } catch (err) {
-      console.error("Errore API:", err);
-      loadingPanel.style.display = 'none'; resultsArea.style.display = 'none'; errorPanel.style.display = 'flex';
-      
-      if (err.status === 400 || (err.message && err.message.includes("API_KEY_INVALID"))) {
-          document.getElementById('errorText').textContent = "Chiave API Gemini non valida. Controlla di averla incollata correttamente.";
-      } else {
-          document.getElementById('errorText').textContent = "Errore durante l'analisi. Riprova. (" + err.message + ")";
-      }
+      showError(err, 'TEXT');
+      btnManualToggle.style.display = 'inline-block'; // ripristina
     } finally {
       btn.disabled = false; btn.textContent = 'Verifica Notizia →';
     }
   });
 
   function renderResults(data, factCheckData, hasFcKey, searchedQueriesList) {
-    loadingPanel.style.display = 'none';
-    resultsArea.style.display = 'block';
+    tabStates.TEXT = 'RESULTS';
+    renderTabState();
 
     const rawVerdict = data.verdict || "NESSUN_RISCONTRO";
     const safeVerdicts = ["VERO", "FALSO", "PARZIALMENTE_FALSO", "NESSUN_RISCONTRO"];
@@ -995,8 +1129,7 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     
     document.getElementById('verdictLabel').textContent = finalVerdict.replace('_', ' ');
     const vBanner = document.getElementById('verdictBanner');
-    vBanner.className = 'verdict-banner'; 
-    vBanner.classList.add(`verdict-${finalVerdict}`);
+    vBanner.className = `verdict-banner verdict-${finalVerdict}`;
     document.getElementById('summaryText').textContent = data.summary || "Sintesi non disponibile.";
 
     const cleanKeywords = (kw) => Array.isArray(kw) ? kw.join(" ") : String(kw || "notizia");
@@ -1005,40 +1138,27 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     const isViralHoax = data.is_viral_hoax === true || data.is_viral_hoax === "true";
     const category = data.category || "ATTUALITA";
     
-    // Sposta la Ricerca Manuale Avanzata in cima ai risultati, appena prima del titolo delle fonti
     const resultsAreaEl = document.getElementById('results-area');
     const sourcesSectionTitle = document.getElementById('sourcesSectionTitle');
     resultsAreaEl.insertBefore(advancedManualSearch, sourcesSectionTitle);
     
     advancedManualSearch.style.display = 'block';
-    advManualInput.value = ''; // Svuota il campo invece di pre-compilarlo
+    advManualInput.value = '';
 
     let activeSites = []; 
-    if (finalVerdict === "VERO") {
-      activeSites = [...sitesDatabase["AGENZIE_STAMPA"]];
-    } else if (finalVerdict === "PARZIALMENTE_FALSO") {
-      if (category === "MEDICINA") {
-        activeSites = [...sitesDatabase["MEDICINA"]];
-        if (isViralHoax) activeSites = activeSites.concat(sitesDatabase["GENERAL"]);
-      } else {
-        activeSites = [...sitesDatabase["AGENZIE_STAMPA"], ...sitesDatabase["GENERAL"]];
-        if (sitesDatabase[category]) activeSites = activeSites.concat(sitesDatabase[category]);
-      }
+    if (finalVerdict === "VERO") { activeSites = [...sitesDatabase["AGENZIE_STAMPA"]]; } 
+    else if (finalVerdict === "PARZIALMENTE_FALSO") {
+      activeSites = category === "MEDICINA" ? [...sitesDatabase["MEDICINA"]] : [...sitesDatabase["AGENZIE_STAMPA"], ...sitesDatabase["GENERAL"]];
+      if (isViralHoax) activeSites = activeSites.concat(sitesDatabase["GENERAL"]);
+      if (sitesDatabase[category] && category !== "MEDICINA") activeSites = activeSites.concat(sitesDatabase[category]);
     } else {
-      if (category === "MEDICINA") {
-        activeSites = [...sitesDatabase["MEDICINA"]];
-        if (isViralHoax) activeSites = activeSites.concat(sitesDatabase["GENERAL"]);
-      } else {
-        activeSites = [...sitesDatabase["GENERAL"]];
-        if (sitesDatabase[category]) {
-          activeSites = activeSites.concat(sitesDatabase[category]);
-        } else {
-          activeSites = activeSites.concat(sitesDatabase["ATTUALITA"]);
-        }
-      }
+      activeSites = category === "MEDICINA" ? [...sitesDatabase["MEDICINA"]] : [...sitesDatabase["GENERAL"]];
+      if (isViralHoax) activeSites = activeSites.concat(sitesDatabase["GENERAL"]);
+      activeSites = sitesDatabase[category] && category !== "MEDICINA" ? activeSites.concat(sitesDatabase[category]) : activeSites.concat(sitesDatabase["ATTUALITA"]);
     }
 
     activeSites = [...new Set(activeSites)];
+    const sourcesGrid = document.getElementById('sourcesGrid');
     sourcesGrid.innerHTML = '';
     
     activeSites.forEach(site => {
@@ -1060,7 +1180,6 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     docsGrid.innerHTML = '';
     
     const activeDocsData = officialDocumentsDB[category];
-    
     if (activeDocsData && activeDocsData.sites && activeDocsData.sites.length > 0) {
         docsContainer.style.display = 'block';
         if (docsTitleText) docsTitleText.textContent = activeDocsData.title;
@@ -1094,51 +1213,257 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
   function renderFactCheckBox(claimsData, searchedQueriesList) {
       const fcList = document.getElementById('factCheckResultsList');
       fcList.innerHTML = '';
-      
       if (claimsData && claimsData.length > 0) {
           let listHtml = claimsData.slice(0, 5).map((item, index) => {
-              const claim = item.claim;
-              const review = claim.claimReview[0];
+              const claim = item.claim; const review = claim.claimReview[0];
               const borderStyle = index === Math.min(claimsData.length, 5) - 1 ? '' : 'border-bottom: 1px solid rgba(79, 195, 247, 0.2); margin-bottom: 1rem; padding-bottom: 1rem;';
-              
               return `
                   <div style="${borderStyle}">
                       <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.5rem; flex-wrap: wrap;">
-                          <span style="font-size: 0.75rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.05em; font-family: 'IBM Plex Mono', monospace;">
-                              🎯 Corrispondenza: "${escapeHTML(item.keyword)}"
-                          </span>
-                          <span style="background: rgba(79, 195, 247, 0.1); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--accent2); border: 1px solid rgba(79, 195, 247, 0.3);">
-                              ✅ ${escapeHTML(review.publisher.name)} • <strong>${escapeHTML(review.textualRating)}</strong>
-                          </span>
+                          <span style="font-size: 0.75rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.05em; font-family: 'IBM Plex Mono', monospace;">🎯 Corrispondenza: "${escapeHTML(item.keyword)}"</span>
+                          <span style="background: rgba(79, 195, 247, 0.1); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; color: var(--accent2); border: 1px solid rgba(79, 195, 247, 0.3);">✅ ${escapeHTML(review.publisher.name)} • <strong>${escapeHTML(review.textualRating)}</strong></span>
                       </div>
                       <div style="font-weight: 500; margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--text);">"${escapeHTML(claim.text)}"</div>
-                      <a href="${review.url}" target="_blank" rel="noopener noreferrer" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.3rem; transition: color 0.2s;" onmouseover="this.style.color='var(--accent2)'" onmouseout="this.style.color='var(--muted)'">
-                          Leggi l'analisi completa ↗
-                      </a>
-                  </div>
-              `;
+                      <a href="${review.url}" target="_blank" rel="noopener noreferrer" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 0.3rem; transition: color 0.2s;" onmouseover="this.style.color='var(--accent2)'" onmouseout="this.style.color='var(--muted)'">Leggi l'analisi completa ↗</a>
+                  </div>`;
           }).join('');
-
-          fcList.innerHTML = `
-                  <h3 style="font-family: 'IBM Plex Mono', monospace; color: var(--accent2); font-size: 0.9rem; margin-bottom: 1.5rem; text-transform: uppercase;">📰 Trovati ${Math.min(claimsData.length, 5)} articoli correlati</h3>
-                  ${listHtml}
-              `;
+          fcList.innerHTML = `<h3 style="font-family: 'IBM Plex Mono', monospace; color: var(--accent2); font-size: 0.9rem; margin-bottom: 1.5rem; text-transform: uppercase;">📰 Trovati ${Math.min(claimsData.length, 5)} articoli correlati</h3>${listHtml}`;
       } else {
           const queriesHtml = (searchedQueriesList || []).length > 0 ? searchedQueriesList.map(q => `<strong>"${escapeHTML(q)}"</strong>`).join(", ") : "Nessun parametro";
           fcList.innerHTML = `
             <div style="padding: 1.5rem; text-align: center; background: rgba(79, 195, 247, 0.05); border-radius: 6px; border: 1px dashed rgba(79, 195, 247, 0.3);">
-              <p style="color: var(--accent2); font-size: 1rem; margin: 0; line-height: 1.6;">
-                Nessun riscontro per: ${queriesHtml}.<br>
-                <strong>La barra di ricerca resta attiva: puoi inserire manualmente altre parole chiave per riprovare.</strong>
-              </p>
+              <p style="color: var(--accent2); font-size: 1rem; margin: 0; line-height: 1.6;">Nessun riscontro per: ${queriesHtml}.<br><strong>La barra di ricerca resta attiva: puoi inserire manualmente altre parole chiave per riprovare.</strong></p>
             </div>`;
       }
+  }
+
+  // --- LOGICA IMMAGINE (Upload, Crop & Analyze) ---
+  const uploadZone = document.getElementById('uploadZone');
+  const imageInput = document.getElementById('imageInput');
+  const editorZone = document.getElementById('editorZone');
+  const imagePreview = document.getElementById('imagePreview');
+  const canvasOverlay = document.getElementById('cropCanvasOverlay');
+  const ctx = canvasOverlay.getContext('2d');
+  const btnCrop = document.getElementById('btnCrop');
+  const btnResetCrop = document.getElementById('btnResetCrop');
+  
+  let originalBase64 = null;
+  let currentBase64 = null;
+
+  uploadZone.addEventListener('click', () => imageInput.click());
+  uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', (e) => {
+    e.preventDefault(); uploadZone.classList.remove('dragover');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+  });
+  imageInput.addEventListener('change', (e) => { if (e.target.files[0]) processFile(e.target.files[0]); });
+
+  function processFile(file) {
+    if (!file.type.startsWith('image/')) return alert("Seleziona un'immagine valida.");
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      originalBase64 = e.target.result; currentBase64 = originalBase64;
+      imagePreview.src = originalBase64;
+      uploadZone.style.display = 'none'; editorZone.style.display = 'flex';
+      setTimeout(initCropSystem, 100);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById('btnNewImage').addEventListener('click', resetImageEditor);
+
+  function resetImageEditor() {
+    uploadZone.style.display = 'block'; editorZone.style.display = 'none';
+    imageInput.value = ''; originalBase64 = null; currentBase64 = null;
+    ctx.clearRect(0,0, canvasOverlay.width, canvasOverlay.height);
+    btnCrop.style.display = 'none'; btnResetCrop.style.display = 'none';
+  }
+
+  let isDrawing = false; let rect = { startX: 0, startY: 0, w: 0, h: 0 };
+
+  function initCropSystem() {
+    canvasOverlay.width = imagePreview.clientWidth;
+    canvasOverlay.height = imagePreview.clientHeight;
+    ctx.clearRect(0,0, canvasOverlay.width, canvasOverlay.height);
+  }
+
+  window.addEventListener('resize', () => { if(editorZone.style.display === 'flex') initCropSystem(); });
+
+  canvasOverlay.addEventListener('mousedown', (e) => {
+    const r = canvasOverlay.getBoundingClientRect();
+    rect.startX = e.clientX - r.left; rect.startY = e.clientY - r.top;
+    isDrawing = true;
+  });
+
+  canvasOverlay.addEventListener('mousemove', (e) => {
+    if (!isDrawing) return;
+    const r = canvasOverlay.getBoundingClientRect();
+    rect.w = (e.clientX - r.left) - rect.startX; rect.h = (e.clientY - r.top) - rect.startY;
+    ctx.clearRect(0, 0, canvasOverlay.width, canvasOverlay.height);
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0,0, canvasOverlay.width, canvasOverlay.height);
+    ctx.clearRect(rect.startX, rect.startY, rect.w, rect.h);
+    ctx.strokeStyle = 'var(--accent2)'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+    ctx.strokeRect(rect.startX, rect.startY, rect.w, rect.h);
+  });
+
+  canvasOverlay.addEventListener('mouseup', () => {
+    isDrawing = false;
+    if (Math.abs(rect.w) > 20 && Math.abs(rect.h) > 20) btnCrop.style.display = 'inline-block';
+    else { ctx.clearRect(0,0, canvasOverlay.width, canvasOverlay.height); btnCrop.style.display = 'none'; }
+  });
+
+  btnCrop.addEventListener('click', () => {
+    const x = Math.min(rect.startX, rect.startX + rect.w); const y = Math.min(rect.startY, rect.startY + rect.h);
+    const w = Math.abs(rect.w); const h = Math.abs(rect.h);
+    const scaleX = imagePreview.naturalWidth / canvasOverlay.width; const scaleY = imagePreview.naturalHeight / canvasOverlay.height;
+    const realX = x * scaleX; const realY = y * scaleY; const realW = w * scaleX; const realH = h * scaleY;
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = realW; tempCanvas.height = realH;
+    tempCanvas.getContext('2d').drawImage(imagePreview, realX, realY, realW, realH, 0, 0, realW, realH);
+    
+    currentBase64 = tempCanvas.toDataURL('image/jpeg'); imagePreview.src = currentBase64;
+    setTimeout(initCropSystem, 100);
+    btnCrop.style.display = 'none'; btnResetCrop.style.display = 'inline-block';
+  });
+
+  btnResetCrop.addEventListener('click', () => {
+    currentBase64 = originalBase64; imagePreview.src = originalBase64;
+    setTimeout(initCropSystem, 100); btnResetCrop.style.display = 'none';
+  });
+
+  const imageSystemPrompt = `Sei il 'Debunking Engine - Modulo Analisi Forense Immagini'.
+COMPITO:
+Analizza accuratamente l'immagine fornita. Cerca artefatti da IA (Midjourney, DALL-E, etc), segni di fotoritocco, problemi di geometria, o se appare genuina.
+Rispondi ESCLUSIVAMENTE con un JSON valido:
+{
+  "verdict": "GENERATA_CON_AI" oppure "MANIPOLATA" oppure "ORIGINALE",
+  "confidence_percentage": <0-100>,
+  "summary": "Analisi forense dettagliata e professionale in italiano.",
+  "anomalies": ["Lista di artefatti", "Sfondo innaturale"],
+  "metadata_inferences": "Deduzioni (es. Illuminazione 3D o Grana fotografica CMOS)"
+}
+Se è genuina, anomalies deve essere [].`;
+
+  document.getElementById('btnAnalyzeImage').addEventListener('click', async () => {
+    if (!currentBase64) return;
+    
+    editorZone.style.display = 'none'; uploadZone.style.display = 'none';
+    
+    tabStates.IMAGE = 'LOADING';
+    document.getElementById('loadingText').innerHTML = `Scansione e analisi pixel in corso...<br><span style="color:var(--accent3)">Gemini sta valutando gli artefatti visivi.</span>`;
+    renderTabState();
+
+    try {
+      const userKey = getApiKey();
+      if (!userKey) throw new Error("Inserisci la tua API Key Gemini nelle impostazioni in alto.");
+      
+      const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${userKey}`;
+      const [header, base64Data] = currentBase64.split(',');
+      const mimeMatch = header.match(/:(.*?);/);
+      const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
+
+      const payload = {
+        contents: [{ parts: [{ text: "Esegui un'analisi forense di questa immagine e restituisci il JSON richiesto." }, { inlineData: { mimeType: mimeType, data: base64Data } }] }],
+        systemInstruction: { parts: [{ text: imageSystemPrompt }] }
+      };
+
+      const result = await fetchWithRetry(endpointUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+      const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+      const jsonResponse = extractJSON(textResponse);
+      
+      renderImageResults(jsonResponse);
+
+    } catch (err) {
+      showError(err, 'IMAGE');
+      editorZone.style.display = 'flex';
+    }
+  });
+
+  function renderImageResults(data) {
+    tabStates.IMAGE = 'RESULTS';
+    renderTabState();
+
+    const verdictColors = { "GENERATA_CON_AI": "var(--verdict-img-ai)", "MANIPOLATA": "var(--verdict-img-manipolata)", "ORIGINALE": "var(--verdict-img-originale)" };
+    const finalVerdict = data.verdict || "SCONOSCIUTO";
+    const color = verdictColors[finalVerdict] || "var(--muted)";
+
+    document.getElementById('imgVerdictLabel').textContent = finalVerdict.replace(/_/g, ' ');
+    document.getElementById('imgVerdictLabel').style.color = color;
+    document.getElementById('imgVerdictBanner').style.borderColor = color;
+
+    document.getElementById('imgConfidenceValue').textContent = data.confidence_percentage || "??";
+    document.getElementById('imgConfidenceCircle').style.borderColor = color;
+    
+    let confColor = "var(--text)";
+    if(finalVerdict === "ORIGINALE" && data.confidence_percentage > 80) confColor = "var(--verdict-img-originale)";
+    if(finalVerdict === "GENERATA_CON_AI" && data.confidence_percentage > 80) confColor = "var(--verdict-img-ai)";
+    document.getElementById('imgConfidenceValue').style.color = confColor;
+
+    document.getElementById('imgSummaryText').textContent = data.summary || "Nessuna analisi disponibile.";
+    document.getElementById('imgMetadataText').textContent = data.metadata_inferences || "Nessuna anomalia metadati visivi rilevata.";
+
+    const anomaliesList = document.getElementById('imgAnomaliesList');
+    anomaliesList.innerHTML = '';
+    
+    if (data.anomalies && data.anomalies.length > 0) {
+      anomaliesList.className = "anomalies-list"; 
+      data.anomalies.forEach(anom => {
+        const li = document.createElement('li'); li.textContent = anom; anomaliesList.appendChild(li);
+      });
+    } else {
+      anomaliesList.className = "anomalies-list clean";
+      const li = document.createElement('li'); li.textContent = "Nessun artefatto evidente o anomalia visibile rilevata."; anomaliesList.appendChild(li);
+    }
+  }
+
+  // --- UTILITY ---
+  function extractJSON(text) {
+    if (!text) throw new Error("Nessuna risposta valida dall'AI.");
+    const firstBrace = text.indexOf('{'); const lastBrace = text.lastIndexOf('}');
+    if (firstBrace === -1 || lastBrace === -1) throw new Error("Risposta AI non formattata in JSON.");
+    return JSON.parse(text.substring(firstBrace, lastBrace + 1));
+  }
+
+  function showError(err, mode) {
+    tabStates[mode] = 'ERROR';
+    renderTabState();
+    
+    if (err.status === 400 || err.status === 404 || (err.message && err.message.includes("API_KEY_INVALID"))) {
+      document.getElementById('errorText').textContent = "Errore API (Modello non trovato o Chiave non valida). Assicurati di usare una chiave valida.";
+    } else {
+      document.getElementById('errorText').textContent = "Errore durante l'analisi. (" + err.message + ")";
+    }
+    console.error(err);
   }
 
   function escapeHTML(str) {
     if (!str) return '';
     return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
   }
+
+  async function fetchWithRetry(url, options, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          const err = new Error(`HTTP ${response.status}: ${JSON.stringify(errData)}`);
+          err.status = response.status;
+          throw err;
+        }
+        return await response.json();
+      } catch (error) {
+        if (error.status && error.status >= 400 && error.status < 500 && error.status !== 429) throw error;
+        if (i === retries - 1) throw error;
+        await new Promise(res => setTimeout(res, 1500 * (i + 1))); 
+      }
+    }
+  }
+
+  // Sincronizza lo stato corretto delle descrizioni all'avvio
+  renderTabState();
 </script>
 </body>
 </html>
