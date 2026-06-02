@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Debunking Engine | Verifica Notizie</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg:          #0d0f14;
@@ -16,9 +16,6 @@
       --accent3:     #a78bfa;
       --text:        #e2e8f0;
       --muted:       #7a8499;
-      --it-tag:      #34d399;
-      --int-tag:     #60a5fa;
-      --eu-tag:      #fb923c;
       
       --verdict-vero:   #34d399;
       --verdict-falso:  #ef4444;
@@ -63,52 +60,69 @@
 
     .eyebrow {
       font-family: 'IBM Plex Mono', monospace;
-      font-size: .75rem;
+      font-size: 0.95rem;
       letter-spacing: .18em;
       text-transform: uppercase;
       color: var(--accent);
       margin-bottom: 1.5rem;
     }
 
-    h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(2.2rem, 5vw, 3.8rem);
-      font-weight: 900;
-      line-height: 1.1;
-      color: #fff;
-      max-width: 800px;
+    /* Stili per il Logo */
+    .main-logo {
+      max-width: 90vw;
+      width: 260px;
+      height: auto;
+      margin: 0.5rem auto 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border);
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    h1 em {
-      font-style: normal;
-      color: var(--accent);
-    }
-
-    .subtitle {
-      margin-top: 1.2rem;
-      font-size: 1.05rem;
-      color: var(--muted);
-      max-width: 680px;
-      font-weight: 300;
-      line-height: 1.7;
+    .main-logo:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(79, 195, 247, 0.2);
+      border-color: var(--accent2);
     }
 
     /* --- STILI PER IL LAYOUT SUPERIORE (PULSANTE + API) --- */
     .top-controls-wrapper {
-      max-width: 800px;
-      margin: 0 auto 1.5rem auto;
+      max-width: 900px;
+      margin: 0 auto 2.5rem auto;
       display: flex;
       justify-content: space-between;
       align-items: stretch;
-      gap: 1rem;
+      gap: 1.5rem;
     }
 
-    .api-settings {
+    .api-settings-left {
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
       gap: 0.5rem;
       flex: 1;
+    }
+
+    .api-settings-header {
+      font-size: 1.15rem;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .api-settings-header em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      color: var(--accent);
+      font-size: 1.2rem;
+      padding: 0 1rem;
     }
 
     .external-tool-btn {
@@ -117,8 +131,8 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      width: 320px; /* Ingrandito come richiesto */
-      min-height: 100px; /* Ingrandito come richiesto */
+      width: 320px;
+      min-height: 100px;
       border-radius: 8px;
       overflow: hidden;
       text-decoration: none;
@@ -144,9 +158,7 @@
       border-color: var(--accent2);
     }
 
-    .external-tool-btn:hover::before {
-      opacity: 0.8;
-    }
+    .external-tool-btn:hover::before { opacity: 0.8; }
 
     .external-tool-content {
       position: relative;
@@ -157,13 +169,13 @@
     }
 
     .external-tool-title {
-      font-family: 'Playfair Display', serif; /* Font elegante */
-      color: var(--accent2); /* Azzurro brillante */
+      font-family: 'Playfair Display', serif;
+      color: var(--accent2);
       font-size: 1.25rem;
       font-weight: 700;
       letter-spacing: 0.02em;
       margin-bottom: 0.4rem;
-      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9); /* Ombra marcata per leggibilità */
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
     }
 
     .external-tool-badge {
@@ -178,12 +190,8 @@
       display: inline-block;
       box-shadow: 0 2px 5px rgba(0,0,0,0.5);
     }
-    
-    .api-input-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 350px;
-    }
+
+    .api-input-wrapper { position: relative; width: 100%; max-width: 350px; }
 
     .api-input {
       background: var(--surface);
@@ -216,8 +224,32 @@
     }
     .btn-clear-api:hover { color: var(--verdict-falso); }
 
+    .search-header-container { padding-top: 1rem; text-align: center; }
+
+    .search-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+    .search-title em { font-style: normal; color: var(--accent); }
+
+    .search-subtitle {
+      font-family: 'Playfair Display', serif;
+      text-align: center;
+      margin: 0 auto 2rem auto;
+      font-size: 1.15rem;
+      color: #fff;
+      max-width: 680px;
+      font-weight: 400;
+      line-height: 1.7;
+    }
+    .search-subtitle em { font-style: normal; color: var(--accent); }
+
     .search-box {
-      margin: 0 auto 3rem auto;
+      margin: 0 auto 1.5rem auto;
       max-width: 800px;
       background: rgba(19, 22, 30, 0.85);
       backdrop-filter: blur(10px);
@@ -227,16 +259,8 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     }
 
-    .search-form {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .search-input-wrapper {
-      position: relative;
-      width: 100%;
-    }
+    .search-form { display: flex; flex-direction: column; gap: 1rem; }
+    .search-input-wrapper { position: relative; width: 100%; }
 
     textarea {
       width: 100%;
@@ -251,11 +275,7 @@
       min-height: 120px;
       transition: border-color 0.2s;
     }
-
-    textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-    }
+    textarea:focus { outline: none; border-color: var(--accent); }
 
     .btn-clear-search {
       position: absolute;
@@ -289,17 +309,25 @@
       transition: transform 0.2s, box-shadow 0.2s;
       align-self: flex-end;
     }
+    .search-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,197,71,0.25); }
+    .search-btn:disabled { background: var(--muted); cursor: not-allowed; transform: none; box-shadow: none; }
 
-    .search-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(232,197,71,0.25);
+    /* Pulsantino ricerca manuale discreto */
+    .btn-manual-toggle {
+      background: rgba(26, 30, 40, 0.4);
+      color: var(--text);
+      border: 1px solid rgba(232, 197, 71, 0.3);
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-
-    .search-btn:disabled {
-      background: var(--muted);
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
+    .btn-manual-toggle:hover {
+      background: rgba(26, 30, 40, 0.9);
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     .state-panel {
@@ -324,29 +352,13 @@
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
-
     @keyframes spin { 100% { transform: rotate(360deg); } }
 
-    .state-text {
-      font-family: 'IBM Plex Mono', monospace;
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    .error-panel {
-      border-color: var(--verdict-falso);
-      background: rgba(239, 68, 68, 0.05);
-    }
-
+    .state-text { font-family: 'IBM Plex Mono', monospace; color: var(--muted); font-size: 0.9rem; }
+    .error-panel { border-color: var(--verdict-falso); background: rgba(239, 68, 68, 0.05); }
     .error-panel h3 { color: var(--verdict-falso); }
     
-    #results-area {
-      display: none;
-      max-width: 900px;
-      margin: 0 auto;
-      animation: fadeIn 0.5s ease;
-    }
-
+    #results-area { display: none; max-width: 900px; margin: 0 auto; animation: fadeIn 0.5s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     .verdict-banner {
@@ -365,17 +377,10 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.15);
     }
 
-    .verdict-VERO { border-color: var(--verdict-vero); }
-    .verdict-VERO .verdict-label { color: var(--verdict-vero); }
-
-    .verdict-FALSO { border-color: var(--verdict-falso); }
-    .verdict-FALSO .verdict-label { color: var(--verdict-falso); }
-
-    .verdict-PARZIALMENTE_FALSO { border-color: var(--verdict-parziale); }
-    .verdict-PARZIALMENTE_FALSO .verdict-label { color: var(--verdict-parziale); }
-
-    .verdict-NESSUN_RISCONTRO { border-color: var(--verdict-sconosciuto); }
-    .verdict-NESSUN_RISCONTRO .verdict-label { color: var(--verdict-sconosciuto); }
+    .verdict-VERO { border-color: var(--verdict-vero); } .verdict-VERO .verdict-label { color: var(--verdict-vero); }
+    .verdict-FALSO { border-color: var(--verdict-falso); } .verdict-FALSO .verdict-label { color: var(--verdict-falso); }
+    .verdict-PARZIALMENTE_FALSO { border-color: var(--verdict-parziale); } .verdict-PARZIALMENTE_FALSO .verdict-label { color: var(--verdict-parziale); }
+    .verdict-NESSUN_RISCONTRO { border-color: var(--verdict-sconosciuto); } .verdict-NESSUN_RISCONTRO .verdict-label { color: var(--verdict-sconosciuto); }
 
     .summary-box {
       background: rgba(19, 22, 30, 0.85);
@@ -385,45 +390,13 @@
       padding: 2rem;
       margin-bottom: 3rem;
     }
+    .summary-box h3 { font-family: 'IBM Plex Mono', monospace; font-size: .85rem; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+    .summary-box p { font-size: 1.1rem; color: var(--text); line-height: 1.8; }
 
-    .summary-box h3 {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: .85rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1rem;
-    }
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fff; margin: 3rem 0 1.5rem; display: flex; align-items: center; gap: .75rem; }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    .summary-box p {
-      font-size: 1.1rem;
-      color: var(--text);
-      line-height: 1.8;
-    }
-
-    .section-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #fff;
-      margin: 3rem 0 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: .75rem;
-    }
-
-    .section-title::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-      gap: 1.25rem;
-    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1.25rem; }
 
     .card {
       background: rgba(26, 30, 40, 0.85);
@@ -437,104 +410,29 @@
       gap: .85rem;
       text-decoration: none;
     }
-
-    .card:hover {
-      border-color: rgba(232,197,71,.35);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 32px rgba(0,0,0,.5);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: .75rem;
-    }
-
-    .site-name {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: #fff;
-      line-height: 1.2;
-    }
-
-    .card-title {
-      font-size: .95rem;
-      color: var(--text);
-      line-height: 1.5;
-      font-weight: 400;
-      margin-top: 0.5rem;
-      flex-grow: 1;
-    }
-
+    .card:hover { border-color: rgba(232,197,71,.35); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,.5); }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+    .site-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: #fff; line-height: 1.2; }
+    .card-title { font-size: .95rem; color: var(--text); line-height: 1.5; font-weight: 400; margin-top: 0.5rem; flex-grow: 1; }
     .btn-open {
-      margin-top: 1rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: rgba(255,255,255,0.05);
-      color: var(--text);
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border: 1px solid var(--border);
-      transition: all 0.2s;
+      margin-top: 1rem; display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.05); color: var(--text);
+      padding: 0.5rem 1rem; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid var(--border); transition: all 0.2s;
     }
+    .card:hover .btn-open { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
-    .card:hover .btn-open {
-      background: var(--accent);
-      color: var(--bg);
-      border-color: var(--accent);
-    }
+    .new-search-wrapper { margin-top: 4rem; text-align: center; }
+    .btn-new-search { background: transparent; color: var(--text); border: 1px solid var(--border); font-family: 'IBM Plex Mono', monospace; font-weight: 700; font-size: 0.9rem; padding: 0.8rem 2rem; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.05em; transition: all 0.2s; }
+    .btn-new-search:hover { background: rgba(26, 30, 40, 0.85); border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 
-    .new-search-wrapper {
-      margin-top: 4rem;
-      text-align: center;
-    }
-    .btn-new-search {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-      font-family: 'IBM Plex Mono', monospace;
-      font-weight: 700;
-      font-size: 0.9rem;
-      padding: 0.8rem 2rem;
-      border-radius: 8px;
-      cursor: pointer;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      transition: all 0.2s;
-    }
-    .btn-new-search:hover {
-      background: rgba(26, 30, 40, 0.85);
-      border-color: var(--accent);
-      color: var(--accent);
-      transform: translateY(-2px);
-    }
+    footer { margin-top: 5rem; padding-top: 2rem; border-top: 1px solid var(--border); font-size: .78rem; color: var(--muted); font-family: 'IBM Plex Mono', monospace; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; }
 
-    footer {
-      margin-top: 5rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border);
-      font-size: .78rem;
-      color: var(--muted);
-      font-family: 'IBM Plex Mono', monospace;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
+      .top-controls-wrapper { flex-direction: column; align-items: stretch; }
+      .or-divider { justify-content: center; padding: 1rem 0; }
+      .api-settings-header { white-space: normal; text-align: center; }
+      .external-tool-btn { width: 100%; min-height: 100px; }
       .grid { grid-template-columns: 1fr; }
       .verdict-banner { font-size: 1.5rem; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
-      .top-controls-wrapper { flex-direction: column-reverse; align-items: stretch; }
-      .api-settings { align-items: stretch; width: 100%; }
-      .external-tool-btn { width: 100%; min-height: 100px; }
     }
   </style>
 </head>
@@ -542,25 +440,13 @@
 <div class="wrapper">
 
   <header>
-    <div class="eyebrow">Sistema di Analisi e Verifica delle Notizie</div>
-    <h1><em>Debunking</em> Engine</h1>
-    <p class="subtitle">
-      Incolla il link a una notizia o scrivi il tuo dubbio. Il sistema interrogherà fonti certificate e agenzie di stampa per restituirti un'analisi in tempo reale.
-    </p>
+    <div class="eyebrow">Sistema di Analisi e Verifica</div>
+    <img src="logoDE.jpg" alt="Debunking Engine Logo" class="main-logo" />
   </header>
 
-  <!-- TOP CONTROLS WRAPPER (Pulsante e campi API) -->
   <div class="top-controls-wrapper">
-    <!-- PULSANTE STRUMENTI DI RICERCA ESTERNO CON IMMAGINE -->
-    <a href="https://alandark.github.io/Strumenti-di-Ricerca/" target="_blank" rel="noopener noreferrer" class="external-tool-btn">
-      <div class="external-tool-content">
-        <div class="external-tool-title">Vai a strumenti di ricerca ↗</div>
-        <div class="external-tool-badge">Non richiede API</div>
-      </div>
-    </a>
-
-    <!-- API SETTINGS -->
-    <div class="api-settings">
+    <div class="api-settings-left">
+      <div class="api-settings-header">Inserisci le tue <em>API Key</em> per i servizi AI</div>
       <div class="api-input-wrapper">
         <input type="password" id="apiKeyInput" class="api-input" placeholder="API Key Gemini (Obbligatoria)..." />
         <button id="clearApiBtn" class="btn-clear-api" title="Cancella la chiave salvata">✖</button>
@@ -570,6 +456,22 @@
         <button id="clearFactCheckApiBtn" class="btn-clear-api" title="Cancella la chiave salvata">✖</button>
       </div>
     </div>
+    
+    <div class="or-divider">oppure ...</div>
+
+    <a href="https://alandark.github.io/Strumenti-di-Ricerca/" target="_blank" rel="noopener noreferrer" class="external-tool-btn">
+      <div class="external-tool-content">
+        <div class="external-tool-title">Usa strumenti di ricerca ↗</div>
+        <div class="external-tool-badge">Non richiede API</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="search-header-container">
+    <h2 class="search-title"><em>Debunking</em> Notizie</h2>
+    <p class="search-subtitle">
+      Incolla il link a una <em>notizia</em> o scrivi il tuo <em>dubbio</em>. Il sistema interrogherà fonti certificate e agenzie di stampa per restituirti un'analisi in tempo reale.
+    </p>
   </div>
 
   <div class="search-box">
@@ -580,6 +482,36 @@
       </div>
       <button type="submit" id="searchBtn" class="search-btn">Verifica Notizia →</button>
     </form>
+  </div>
+
+  <!-- Pulsantino allineato a destra sotto il box di ricerca -->
+  <div id="manualSearchToggleWrapper" style="max-width: 800px; margin: 0 auto; text-align: right; margin-top: -1rem; margin-bottom: 3rem;">
+    <button type="button" id="btnManualToggle" class="btn-manual-toggle">Ricerca manuale</button>
+  </div>
+
+  <!-- Modulo Ricerca Manuale Avanzata (si muoverà dinamicamente) -->
+  <div id="advancedManualSearch" class="summary-box" style="display: none; margin-bottom: 2rem;">
+    <h3 style="color: var(--accent2); margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">🔍 Ricerca Manuale Avanzata</h3>
+    <div style="display: flex; flex-direction: column; gap: 1rem;">
+      <div class="search-input-wrapper">
+        <input type="text" id="advManualInput" placeholder="Inserisci parole chiave da cercare..." class="api-input" style="width: 100%; max-width: none; font-size: 1rem; padding: 0.8rem 2.5rem 0.8rem 1rem;" />
+        <button type="button" id="clearAdvManualBtn" class="btn-clear-api" title="Cancella testo" style="right: 10px;">✖</button>
+      </div>
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+        <select id="advCategorySelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
+          <option value="">-- Seleziona Categoria --</option>
+          <option value="FACT_CHECKING">Fact-Checking</option>
+          <option value="STUDI">Studi Accademici e Medici</option>
+          <option value="AGENZIE">Agenzie di Stampa</option>
+          <option value="DATI">Dati e Documenti Ufficiali</option>
+          <option value="ASSOCIAZIONI">Associazioni e ONG</option>
+        </select>
+        <select id="advSiteSelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
+          <option value="">-- Seleziona prima una Categoria --</option>
+        </select>
+        <button type="button" id="advSearchGoBtn" class="search-btn" style="padding: 0.8rem 2rem;">Avvia Ricerca su Google ↗</button>
+      </div>
+    </div>
   </div>
 
   <div id="loadingPanel" class="state-panel">
@@ -599,37 +531,23 @@
     </div>
 
     <div class="summary-box">
-      <h3>// Sintesi dell'Analisi</h3>
+      <h3>💡 Sintesi dell'Analisi</h3>
       <p id="summaryText">Caricamento sintesi...</p>
     </div>
 
-    <!-- 1. SEZIONE FONTI AFFIDABILI (Prima in ordine) -->
     <h2 class="section-title"><span class="section-icon">📑</span> Ricerca Mirata sulle Fonti Affidabili</h2>
-    <div id="sourcesGrid" class="grid" style="margin-bottom: 3rem;">
-      <!-- Le carte verranno generate dal JS -->
-    </div>
+    <div id="sourcesGrid" class="grid" style="margin-bottom: 3rem;"></div>
 
-    <!-- 2. SEZIONE STUDI E DOCUMENTI (Dinamica) -->
     <div id="documentsContainer" style="display: none; margin-bottom: 3rem;">
       <h2 class="section-title">
           <span id="documentsSectionIcon" class="section-icon">🔬</span> 
           <span id="documentsSectionText">Studi e Documenti Ufficiali</span>
       </h2>
-      <div id="documentsGrid" class="grid">
-        <!-- Le carte verranno generate dal JS -->
-      </div>
+      <div id="documentsGrid" class="grid"></div>
     </div>
 
-    <!-- 3. SEZIONE GOOGLE FACT CHECK -->
     <div id="factCheckContainer" style="display: none;">
       <h2 class="section-title"><span class="section-icon">✅</span> Riscontri parole chiave di Google fact checker</h2>
-      
-      <!-- Modulo di ricerca manuale -->
-      <form id="manualFcForm" style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
-        <input type="text" id="manualFcInput" placeholder="Cerca manualmente altre parole chiave..." style="flex: 1; background: rgba(13, 15, 20, 0.9); border: 1px solid var(--accent2); color: var(--text); padding: 0.8rem; border-radius: 6px; font-family: 'IBM Plex Sans', sans-serif; outline: none; transition: box-shadow 0.2s;" onfocus="this.style.boxShadow='0 0 0 2px rgba(79,195,247,0.3)'" onblur="this.style.boxShadow='none'">
-        <button type="submit" style="background: var(--accent2); color: var(--bg); border: none; padding: 0 1.5rem; border-radius: 6px; font-weight: bold; cursor: pointer; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">Cerca</button>
-      </form>
-
       <div id="factCheckResultsGrid" class="grid"></div>
     </div>
     
@@ -668,7 +586,6 @@
   clearFactCheckApiBtn.addEventListener('click', () => { localStorage.removeItem('fcApiKey'); factCheckApiKeyInput.value = ''; });
   const getFcApiKey = () => factCheckApiKeyInput.value.trim();
 
-  // Prompt Blindato per JSON esatto - Inclusa categoria ECONOMIA
   const systemPrompt = `Sei il 'Debunking Engine', uno strumento di fact-checking ultra-rigoroso.
 COMPITO:
 1. Analizza la notizia fornita (usa Google Search integrato se necessario).
@@ -691,7 +608,6 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
   "fact_check_query": "..."
 }`;
 
-  // Database Fonti Giornalistiche / Fact Checking
   const sitesDatabase = {
     "AGENZIE_STAMPA": [
       { name: "ANSA", domain: "ansa.it", icon: "🗞️", lang: "it" },
@@ -721,20 +637,17 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     ]
   };
 
-  // Database Strutturato e Dinamico per Documenti, Dati, Studi accademici e Leggi
   const officialDocumentsDB = {
     "MEDICINA": {
-      title: "Studi e Ricerche Mediche",
-      icon: "🔬",
+      title: "Studi e Ricerche Mediche", icon: "🔬",
       sites: [
         { name: "PubMed (Studi)", domain: "pubmed.ncbi.nlm.nih.gov", icon: "⚕️", lang: "en" },
-        { name: "Epicentro (ISS)", domain: "epicentro.iss.it", icon: "🇮🇹", lang: "it" },
+        { name: "Istituto Superiore di Sanità (ISS)", domain: "epicentro.iss.it", icon: "🇮🇹", lang: "it" },
         { name: "World Health Org", domain: "who.int", icon: "🌐", lang: "en" }
       ]
     },
     "POLITICA": {
-      title: "Leggi e Sentenze Ufficiali",
-      icon: "⚖️",
+      title: "Leggi e Sentenze Ufficiali", icon: "⚖️",
       sites: [
         { name: "Gazzetta Ufficiale", domain: "gazzettaufficiale.it", icon: "🇮🇹", lang: "it" },
         { name: "Corte di Cassazione", domain: "cortedicassazione.it", icon: "🏛️", lang: "it" },
@@ -742,8 +655,7 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
       ]
     },
     "ECONOMIA": {
-      title: "Dati e Statistiche Ufficiali",
-      icon: "📊",
+      title: "Dati e Statistiche Ufficiali", icon: "📊",
       sites: [
         { name: "ISTAT", domain: "istat.it", icon: "📈", lang: "it" },
         { name: "Eurostat", domain: "ec.europa.eu/eurostat", icon: "🇪🇺", lang: "en" },
@@ -751,8 +663,7 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
       ]
     },
     "STORIA_MISTERO": {
-      title: "Archivi e Ricerca Accademica",
-      icon: "📚",
+      title: "Archivi e Ricerca Accademica", icon: "📚",
       sites: [
         { name: "JSTOR (Archivi)", domain: "jstor.org", icon: "🏛️", lang: "en" },
         { name: "Google Scholar", domain: "scholar.google.it", icon: "🎓", lang: "it" },
@@ -760,13 +671,49 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
       ]
     },
     "ATTUALITA": {
-      title: "Dati e Statistiche Sociali",
-      icon: "📊",
+      title: "Dati e Statistiche Sociali", icon: "📊",
       sites: [
         { name: "ISTAT", domain: "istat.it", icon: "📈", lang: "it" },
         { name: "Eurostat", domain: "ec.europa.eu/eurostat", icon: "🇪🇺", lang: "en" }
       ]
     }
+  };
+
+  const manualCategoriesDB = {
+    "FACT_CHECKING": [
+      { name: "Facta.news", domain: "facta.news" },
+      { name: "BUTAC", domain: "butac.it" },
+      { name: "Pagella Politica", domain: "pagellapolitica.it" },
+      { name: "Open Fact-Checking", domain: "open.online" },
+      { name: "Snopes", domain: "snopes.com" },
+      { name: "Reuters Fact Check", domain: "reuters.com/fact-check" },
+      { name: "CICAP", domain: "cicap.org" }
+    ],
+    "STUDI": [
+      { name: "PubMed", domain: "pubmed.ncbi.nlm.nih.gov" },
+      { name: "Google Scholar", domain: "scholar.google.it" },
+      { name: "Istituto Superiore di Sanità (ISS)", domain: "epicentro.iss.it" },
+      { name: "MedBunker", domain: "medbunker.it" },
+      { name: "Science Feedback", domain: "sciencefeedback.co" }
+    ],
+    "AGENZIE": [
+      { name: "ANSA", domain: "ansa.it" },
+      { name: "AGI", domain: "agi.it" },
+      { name: "Adnkronos", domain: "adnkronos.com" },
+      { name: "Reuters", domain: "reuters.com" }
+    ],
+    "DATI": [
+      { name: "ISTAT", domain: "istat.it" },
+      { name: "Eurostat", domain: "ec.europa.eu/eurostat" },
+      { name: "Banca d'Italia", domain: "bancaditalia.it" },
+      { name: "Gazzetta Ufficiale", domain: "gazzettaufficiale.it" }
+    ],
+    "ASSOCIAZIONI": [
+      { name: "Amnesty International", domain: "amnesty.org" },
+      { name: "Human Rights Watch", domain: "hrw.org" },
+      { name: "Freedom House", domain: "freedomhouse.org" },
+      { name: "Reporters Without Borders", domain: "rsf.org" }
+    ]
   };
 
   const form = document.getElementById('searchForm');
@@ -778,10 +725,53 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
   const resultsArea = document.getElementById('results-area');
   const sourcesGrid = document.getElementById('sourcesGrid');
   
+  const btnManualToggle = document.getElementById('btnManualToggle');
+  const advancedManualSearch = document.getElementById('advancedManualSearch');
+  const manualToggleWrapper = document.getElementById('manualSearchToggleWrapper');
+  const advCategorySelect = document.getElementById('advCategorySelect');
+  const advSiteSelect = document.getElementById('advSiteSelect');
+  const advManualInput = document.getElementById('advManualInput');
+
   document.getElementById('clearSearchBtn').addEventListener('click', () => { input.value = ''; input.focus(); });
+  document.getElementById('clearAdvManualBtn').addEventListener('click', () => { advManualInput.value = ''; advManualInput.focus(); });
+
   document.getElementById('newSearchBtn').addEventListener('click', () => {
     input.value = ''; resultsArea.style.display = 'none'; errorPanel.style.display = 'none';
+    btnManualToggle.style.display = 'inline-block';
+    manualToggleWrapper.after(advancedManualSearch); // Riporta la tabella sotto il pulsante
+    advancedManualSearch.style.display = 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(() => input.focus(), 500);
+  });
+
+  btnManualToggle.addEventListener('click', () => {
+    advancedManualSearch.style.display = advancedManualSearch.style.display === 'none' ? 'block' : 'none';
+    if (advancedManualSearch.style.display === 'block' && input.value.trim() !== '') {
+        advManualInput.value = input.value.trim();
+    }
+  });
+
+  advCategorySelect.addEventListener('change', () => {
+    const cat = advCategorySelect.value;
+    advSiteSelect.innerHTML = '<option value="">-- Seleziona Sito --</option>';
+    if (cat && manualCategoriesDB[cat]) {
+        manualCategoriesDB[cat].forEach(site => {
+            const opt = document.createElement('option');
+            opt.value = site.domain;
+            opt.textContent = site.name;
+            advSiteSelect.appendChild(opt);
+        });
+    } else {
+        advSiteSelect.innerHTML = '<option value="">-- Seleziona prima una Categoria --</option>';
+    }
+  });
+
+  document.getElementById('advSearchGoBtn').addEventListener('click', () => {
+    const query = advManualInput.value.trim();
+    const domain = advSiteSelect.value;
+    if (!query) return alert("Inserisci una parola chiave da cercare.");
+    let searchUrl = `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+    if (domain) searchUrl += encodeURIComponent(` site:${domain}`);
+    window.open(searchUrl, '_blank');
   });
 
   async function fetchWithRetry(url, options, retries = 5) {
@@ -797,9 +787,7 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
         }
         return await response.json();
       } catch (error) {
-        if (error.status && error.status >= 400 && error.status < 500 && error.status !== 429) {
-            throw error;
-        }
+        if (error.status && error.status >= 400 && error.status < 500 && error.status !== 429) throw error;
         if (i === retries - 1) throw error;
         await new Promise(res => setTimeout(res, delays[i]));
       }
@@ -811,16 +799,14 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     const query = input.value.trim();
     if (!query) return;
 
+    btnManualToggle.style.display = 'none';
+    advancedManualSearch.style.display = 'none';
     resultsArea.style.display = 'none'; errorPanel.style.display = 'none'; loadingPanel.style.display = 'flex';
     btn.disabled = true; btn.textContent = 'Elaborazione AI...';
 
     try {
       const userKey = getApiKey();
       const activeKey = userKey || apiKey;
-      
-      if (!activeKey) {
-          throw new Error("MISSING_API_KEY");
-      }
 
       const modelName = userKey ? "gemini-2.5-flash" : "gemini-2.5-flash-preview-09-2025";
       const endpointUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${activeKey}`;
@@ -838,7 +824,6 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
       let textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
       if (!textResponse) throw new Error("Nessuna risposta valida dall'AI.");
 
-      // PARSING BLINDATO DEL JSON
       const firstBrace = textResponse.indexOf('{');
       const lastBrace = textResponse.lastIndexOf('}');
       if (firstBrace === -1 || lastBrace === -1) throw new Error("Risposta AI non formattata in JSON.");
@@ -846,7 +831,6 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
       const cleanJsonString = textResponse.substring(firstBrace, lastBrace + 1);
       const jsonResponse = JSON.parse(cleanJsonString);
       
-      // Chiamata parallela a Google Fact Check API
       const fcKey = getFcApiKey();
       let factCheckData = null;
       let searchedQueriesList = [];
@@ -875,17 +859,13 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
                           data.claims.forEach(claim => {
                               if (claim.claimReview && claim.claimReview.length > 0) {
                                   const url = claim.claimReview[0].url;
-                                  if (!seenUrls.has(url)) {
-                                      seenUrls.add(url);
-                                      allClaims.push({ claim: claim, keyword: term });
-                                  }
+                                  if (!seenUrls.has(url)) { seenUrls.add(url); allClaims.push({ claim: claim, keyword: term }); }
                               }
                           });
                       }
                   }
-              } catch (e) { console.warn("Errore Fact Check API per termine:", term); }
-              
-              if (allClaims.length > 0) break; // Smart Break
+              } catch (e) { console.warn("Errore Fact Check:", term); }
+              if (allClaims.length > 0) break;
           }
           factCheckData = { claimsData: allClaims };
       }
@@ -896,9 +876,7 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
       console.error("Errore API:", err);
       loadingPanel.style.display = 'none'; resultsArea.style.display = 'none'; errorPanel.style.display = 'flex';
       
-      if (err.message === "MISSING_API_KEY") {
-          document.getElementById('errorText').textContent = "Attenzione: Inserisci la tua API Key Gemini in alto per poter procedere.";
-      } else if (err.status === 400 || err.message.includes("API_KEY_INVALID")) {
+      if (err.status === 400 || (err.message && err.message.includes("API_KEY_INVALID"))) {
           document.getElementById('errorText').textContent = "Chiave API Gemini non valida. Controlla di averla incollata correttamente.";
       } else {
           document.getElementById('errorText').textContent = "Errore durante l'analisi. Riprova. (" + err.message + ")";
@@ -928,7 +906,11 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     const isViralHoax = data.is_viral_hoax === true || data.is_viral_hoax === "true";
     const category = data.category || "ATTUALITA";
     
-    // 1. Render Fonti Affidabili
+    // Sposta la Ricerca Manuale Avanzata in cima ai risultati
+    document.getElementById('sourcesGrid').parentNode.insertBefore(advancedManualSearch, document.getElementById('sourcesGrid'));
+    advancedManualSearch.style.display = 'block';
+    if (keywordsIT) advManualInput.value = keywordsIT;
+
     let activeSites = []; 
     if (finalVerdict === "VERO") {
       activeSites = [...sitesDatabase["AGENZIE_STAMPA"]];
@@ -969,7 +951,6 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
       sourcesGrid.appendChild(card);
     });
 
-    // 2. Render Documenti, Dati e Sentenze
     const docsContainer = document.getElementById('documentsContainer');
     const docsGrid = document.getElementById('documentsGrid');
     const docsTitleText = document.getElementById('documentsSectionText');
@@ -999,7 +980,6 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
         docsContainer.style.display = 'none';
     }
 
-    // 3. Render Google Fact Check
     const fcContainer = document.getElementById('factCheckContainer');
     if (hasFcKey) {
         fcContainer.style.display = 'block';
@@ -1038,7 +1018,7 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
           }).join('');
 
           fcGrid.innerHTML = `<div style="grid-column: 1 / -1; background: rgba(19, 22, 30, 0.85); backdrop-filter: blur(5px); border: 1px solid var(--accent2); border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(79, 195, 247, 0.05);">
-                  <h3 style="font-family: 'IBM Plex Mono', monospace; color: var(--accent2); font-size: 0.9rem; margin-bottom: 1.5rem; text-transform: uppercase;">// Trovati ${Math.min(claimsData.length, 5)} articoli correlati</h3>
+                  <h3 style="font-family: 'IBM Plex Mono', monospace; color: var(--accent2); font-size: 0.9rem; margin-bottom: 1.5rem; text-transform: uppercase;">📰 Trovati ${Math.min(claimsData.length, 5)} articoli correlati</h3>
                   ${listHtml}
               </div>`;
       } else {
@@ -1052,39 +1032,6 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
              </div>`;
       }
   }
-
-  document.getElementById('manualFcForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const query = document.getElementById('manualFcInput').value.trim();
-      const fcKey = getFcApiKey();
-      
-      if (!query) return;
-      if (!fcKey) return alert("Inserisci la chiave API di Google Fact Check in alto.");
-
-      const fcGrid = document.getElementById('factCheckResultsGrid');
-      fcGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--accent2); padding: 2rem; font-family: 'IBM Plex Mono', monospace;">Ricerca in corso...</div>`;
-
-      try {
-          const fcUrl = `https://factchecktools.googleapis.com/v1alpha1/claims:search?query=${encodeURIComponent(query)}&key=${fcKey}`;
-          const fcRes = await fetch(fcUrl);
-          let formattedData = [];
-          if (fcRes.ok) {
-              const data = await fcRes.json();
-              if (data.claims && data.claims.length > 0) {
-                  let seenUrls = new Set();
-                  data.claims.forEach(claim => {
-                      if (claim.claimReview && claim.claimReview.length > 0) {
-                          const url = claim.claimReview[0].url;
-                          if (!seenUrls.has(url)) { seenUrls.add(url); formattedData.push({ claim: claim, keyword: query }); }
-                      }
-                  });
-              }
-          }
-          renderFactCheckBox(formattedData, [query]);
-      } catch (err) {
-          fcGrid.innerHTML = `<div style="grid-column: 1 / -1; color: var(--verdict-falso); text-align: center; padding: 2rem;">Errore di connessione.</div>`;
-      }
-  });
 
   function escapeHTML(str) {
     if (!str) return '';
