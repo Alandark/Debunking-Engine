@@ -489,9 +489,9 @@
     
     <div class="or-divider">oppure ...</div>
 
-    <a href="https://alandark.github.io/Strumenti-di-Ricerca/" target="_blank" rel="noopener noreferrer" class="external-tool-btn">
+    <a href="https://alandark.github.io/Strumenti-di-Ricerca/" class="external-tool-btn">
       <div class="external-tool-content">
-        <div class="external-tool-title">Usa strumenti di ricerca ↗</div>
+        <div class="external-tool-title">Usa strumenti di ricerca</div>
         <div class="external-tool-badge">Non richiede API</div>
       </div>
     </a>
@@ -565,7 +565,7 @@
       <p id="summaryText">Caricamento sintesi...</p>
     </div>
 
-    <h2 class="section-title"><span class="section-icon">📑</span> Ricerca Mirata sulle Fonti Affidabili</h2>
+    <h2 id="sourcesSectionTitle" class="section-title"><span class="section-icon">📑</span> Ricerca Mirata sulle Fonti Affidabili</h2>
     <div id="sourcesGrid" class="grid" style="margin-bottom: 3rem;"></div>
 
     <div id="documentsContainer" style="display: none; margin-bottom: 3rem;">
@@ -578,7 +578,24 @@
 
     <div id="factCheckContainer" style="display: none;">
       <h2 class="section-title"><span class="section-icon">✅</span> Riscontri parole chiave di Google fact checker</h2>
-      <div id="factCheckResultsGrid" class="grid"></div>
+      
+      <!-- Unico box blu che contiene sia la barra di ricerca che i risultati -->
+      <div style="background: rgba(19, 22, 30, 0.85); backdrop-filter: blur(5px); border: 1px solid var(--accent2); border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(79, 195, 247, 0.05);">
+        
+        <!-- Barra di ricerca manuale interna -->
+        <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(79, 195, 247, 0.2);">
+          <!-- INIZIO MODIFICA: Aggiunto wrapper search-input-wrapper per posizionare la "X" -->
+          <div class="search-input-wrapper" style="flex: 1; min-width: 200px;">
+            <input type="text" id="manualFcInput" class="api-input" placeholder="Cerca manualmente nel database Google Fact Check..." style="width: 100%; max-width: none; border-color: rgba(79, 195, 247, 0.3);" />
+            <button type="button" id="clearManualFcBtn" class="btn-clear-api" title="Cancella testo" style="right: 10px;">✖</button>
+          </div>
+          <!-- FINE MODIFICA -->
+          <button type="button" id="manualFcBtn" class="search-btn" style="padding: 0.6rem 1.5rem; font-size: 0.9rem; background: rgba(79, 195, 247, 0.1); color: var(--accent2); border: 1px solid var(--accent2);">Cerca 🔍</button>
+        </div>
+
+        <!-- Qui verranno iniettati i risultati -->
+        <div id="factCheckResultsList"></div>
+      </div>
     </div>
     
     <div class="new-search-wrapper">
@@ -765,8 +782,60 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
   document.getElementById('clearSearchBtn').addEventListener('click', () => { input.value = ''; input.focus(); });
   document.getElementById('clearAdvManualBtn').addEventListener('click', () => { advManualInput.value = ''; advManualInput.focus(); });
 
+  // INIZIO MODIFICA: Aggiunto EventListener per il nuovo pulsante "X" nel Google Fact Check
+  document.getElementById('clearManualFcBtn').addEventListener('click', () => { 
+    const manualFcInput = document.getElementById('manualFcInput');
+    manualFcInput.value = ''; 
+    manualFcInput.focus(); 
+  });
+  // FINE MODIFICA
+
+  // Funzione di ricerca manuale per Google Fact Check
+  document.getElementById('manualFcBtn').addEventListener('click', async () => {
+    const term = document.getElementById('manualFcInput').value.trim();
+    const fcKey = getFcApiKey();
+    if (!term) return alert("Inserisci un termine da cercare.");
+    if (!fcKey) return alert("Inserisci la API Key di Google Fact Check nelle impostazioni in alto.");
+    
+    const manualFcBtn = document.getElementById('manualFcBtn');
+    manualFcBtn.textContent = '...';
+    manualFcBtn.disabled = true;
+
+    try {
+        const fcUrl = `https://factchecktools.googleapis.com/v1alpha1/claims:search?query=${encodeURIComponent(term)}&key=${fcKey}`;
+        const fcRes = await fetch(fcUrl);
+        let allClaims = [];
+        if (fcRes.ok) {
+            const data = await fcRes.json();
+            if (data.claims && data.claims.length > 0) {
+                let seenUrls = new Set();
+                data.claims.forEach(claim => {
+                    if (claim.claimReview && claim.claimReview.length > 0) {
+                        const url = claim.claimReview[0].url;
+                        if (!seenUrls.has(url)) { seenUrls.add(url); allClaims.push({ claim: claim, keyword: term }); }
+                    }
+                });
+            }
+        }
+        renderFactCheckBox(allClaims, [term]);
+    } catch (e) {
+        console.error("Errore Fact Check Manuale:", e);
+        alert("Errore durante la ricerca manuale.");
+    } finally {
+        manualFcBtn.textContent = 'Cerca 🔍';
+        manualFcBtn.disabled = false;
+    }
+  });
+
   document.getElementById('newSearchBtn').addEventListener('click', () => {
-    input.value = ''; resultsArea.style.display = 'none'; errorPanel.style.display = 'none';
+    input.value = ''; 
+    resultsArea.style.display = 'none'; 
+    errorPanel.style.display = 'none';
+    
+    // INIZIO MODIFICA: Svuota anche la barra di ricerca manuale Fact Check quando si fa una "Nuova Ricerca"
+    document.getElementById('manualFcInput').value = '';
+    // FINE MODIFICA
+
     btnManualToggle.style.display = 'inline-block';
     manualToggleWrapper.after(advancedManualSearch); // Riporta la tabella sotto il pulsante
     advancedManualSearch.style.display = 'none';
@@ -936,10 +1005,13 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     const isViralHoax = data.is_viral_hoax === true || data.is_viral_hoax === "true";
     const category = data.category || "ATTUALITA";
     
-    // Sposta la Ricerca Manuale Avanzata in cima ai risultati
-    document.getElementById('sourcesGrid').parentNode.insertBefore(advancedManualSearch, document.getElementById('sourcesGrid'));
+    // Sposta la Ricerca Manuale Avanzata in cima ai risultati, appena prima del titolo delle fonti
+    const resultsAreaEl = document.getElementById('results-area');
+    const sourcesSectionTitle = document.getElementById('sourcesSectionTitle');
+    resultsAreaEl.insertBefore(advancedManualSearch, sourcesSectionTitle);
+    
     advancedManualSearch.style.display = 'block';
-    advManualInput.value = ''; // Svuota il campo invece di pre-compilarlo con keywordsIT
+    advManualInput.value = ''; // Svuota il campo invece di pre-compilarlo
 
     let activeSites = []; 
     if (finalVerdict === "VERO") {
@@ -1020,8 +1092,8 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
   }
 
   function renderFactCheckBox(claimsData, searchedQueriesList) {
-      const fcGrid = document.getElementById('factCheckResultsGrid');
-      fcGrid.innerHTML = '';
+      const fcList = document.getElementById('factCheckResultsList');
+      fcList.innerHTML = '';
       
       if (claimsData && claimsData.length > 0) {
           let listHtml = claimsData.slice(0, 5).map((item, index) => {
@@ -1047,19 +1119,19 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
               `;
           }).join('');
 
-          fcGrid.innerHTML = `<div style="grid-column: 1 / -1; background: rgba(19, 22, 30, 0.85); backdrop-filter: blur(5px); border: 1px solid var(--accent2); border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(79, 195, 247, 0.05);">
+          fcList.innerHTML = `
                   <h3 style="font-family: 'IBM Plex Mono', monospace; color: var(--accent2); font-size: 0.9rem; margin-bottom: 1.5rem; text-transform: uppercase;">📰 Trovati ${Math.min(claimsData.length, 5)} articoli correlati</h3>
                   ${listHtml}
-              </div>`;
+              `;
       } else {
           const queriesHtml = (searchedQueriesList || []).length > 0 ? searchedQueriesList.map(q => `<strong>"${escapeHTML(q)}"</strong>`).join(", ") : "Nessun parametro";
-          fcGrid.innerHTML = `<div style="grid-column: 1 / -1; background: rgba(26, 30, 40, 0.5); padding: 1.5rem; border-radius: 8px; border: 1px dashed var(--border); text-align: center;">
-               <span style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block;">🤷</span>
-               <p style="color: var(--muted); font-size: 0.95rem;">
-                 Ricerca effettuata per:<br> ${queriesHtml}<br><br>
-                 Non è stato trovato nessun articolo corrispondente nel database ufficiale.
-               </p>
-             </div>`;
+          fcList.innerHTML = `
+            <div style="padding: 1.5rem; text-align: center; background: rgba(79, 195, 247, 0.05); border-radius: 6px; border: 1px dashed rgba(79, 195, 247, 0.3);">
+              <p style="color: var(--accent2); font-size: 1rem; margin: 0; line-height: 1.6;">
+                Nessun riscontro per: ${queriesHtml}.<br>
+                <strong>La barra di ricerca resta attiva: puoi inserire manualmente altre parole chiave per riprovare.</strong>
+              </p>
+            </div>`;
       }
   }
 
