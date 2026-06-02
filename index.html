@@ -584,11 +584,12 @@
         <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
           <select id="advCategorySelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
             <option value="">-- Seleziona Categoria --</option>
-            <option value="FACT_CHECKING">Fact-Checking</option>
-            <option value="STUDI">Studi Accademici e Medici</option>
-            <option value="AGENZIE">Agenzie di Stampa</option>
-            <option value="DATI">Dati e Documenti Ufficiali</option>
-            <option value="ASSOCIAZIONI">Associazioni e ONG</option>
+            <option value="FACT_CHECKING">1. Fact-Checking</option>
+            <option value="SCIENZA_DIVULGAZIONE">2. Scienza, Medicina, Natura e Tech</option>
+            <option value="ARCHIVI_ACCADEMICI">3. Studi e Archivi Accademici</option>
+            <option value="STATISTICA_DATI">4. Statistica e Indicatori Sociali</option>
+            <option value="GIURIDICO_LEGALE">5. Giuridico e Legale</option>
+            <option value="ONG_MONITORAGGIO">6. ONG e Monitoraggio</option>
           </select>
           <select id="advSiteSelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
             <option value="">-- Seleziona prima una Categoria --</option>
@@ -759,112 +760,381 @@
   document.getElementById('clearFactCheckApiBtn').addEventListener('click', () => { localStorage.removeItem('fcApiKey'); factCheckApiKeyInput.value = ''; });
   const getFcApiKey = () => factCheckApiKeyInput.value.trim();
 
-  // --- DATABASE ORIGINALI REINTEGRATI ---
+  // --- DATABASE ORIGINALI REINTEGRATI E AMPLIATI ---
+  // Fonti dinamiche selezionate per i risultati automatici (estratte dalla lista madre)
   const sitesDatabase = {
     "AGENZIE_STAMPA": [
       { name: "ANSA", domain: "ansa.it", icon: "🗞️", lang: "it" },
       { name: "AGI", domain: "agi.it", icon: "🗞️", lang: "it" },
-      { name: "Adnkronos", domain: "adnkronos.com", icon: "🗞️", lang: "it" },
-      { name: "Reuters", domain: "reuters.com", icon: "🌐", lang: "en" }
+      { name: "Reuters", domain: "reuters.com", icon: "🌐", lang: "en" },
+      { name: "Associated Press", domain: "apnews.com", icon: "🌐", lang: "en" }
     ],
-    "GENERAL": [
-      { name: "Facta.news", domain: "facta.news", icon: "🇮🇹", lang: "it" },
-      { name: "BUTAC", domain: "butac.it", icon: "🇮🇹", lang: "it" },
+    "GENERAL_FACT_CHECKING": [
+      { name: "Facta", domain: "facta.news", icon: "🇮🇹", lang: "it" },
+      { name: "Open Fact-Checking", domain: "open.online", icon: "🇮🇹", lang: "it" },
+      { name: "Bufale.net", domain: "bufale.net", icon: "🇮🇹", lang: "it" },
       { name: "Snopes", domain: "snopes.com", icon: "🌐", lang: "en" }
     ],
-    "POLITICA": [
+    "MEDICINA_SCIENZA": [
+      { name: "MedBunker", domain: "medbunker.blogspot.com", icon: "🩺", lang: "it" },
+      { name: "CICAP", domain: "cicap.org", icon: "🔬", lang: "it" },
+      { name: "Nature", domain: "nature.com", icon: "🧬", lang: "en" },
+      { name: "Science", domain: "science.org", icon: "🧪", lang: "en" },
+      { name: "The Lancet", domain: "thelancet.com", icon: "⚕️", lang: "en" }
+    ],
+    "POLITICA_LEGALE": [
       { name: "Pagella Politica", domain: "pagellapolitica.it", icon: "🏛️", lang: "it" },
-      { name: "Open Fact-Checking", domain: "open.online", icon: "📰", lang: "it" }
+      { name: "Corte Costituzionale", domain: "cortecostituzionale.it", icon: "⚖️", lang: "it" },
+      { name: "Cassazione", domain: "cortedicassazione.it", icon: "⚖️", lang: "it" }
     ],
-    "MEDICINA": [
-      { name: "MedBunker", domain: "medbunker.it", icon: "🔬", lang: "it" },
-      { name: "Science Feedback", domain: "sciencefeedback.co", icon: "🧪", lang: "en" }
+    "ECONOMIA_STATISTICA": [
+      { name: "Pagella Politica", domain: "pagellapolitica.it", icon: "📊", lang: "it" },
+      { name: "World Bank Data", domain: "data.worldbank.org", icon: "🌐", lang: "en" },
+      { name: "IMF Data", domain: "imf.org", icon: "📊", lang: "en" }
     ],
-    "STORIA_MISTERO": [
-      { name: "CICAP", domain: "cicap.org", icon: "👽", lang: "it" },
-      { name: "Focus.it", domain: "focus.it", icon: "📖", lang: "it" }
+    "STORIA_CULTURA": [
+      { name: "CICAP", domain: "cicap.org", icon: "🏺", lang: "it" },
+      { name: "Treccani", domain: "treccani.it", icon: "📖", lang: "it" },
+      { name: "Britannica", domain: "britannica.com", icon: "🌐", lang: "en" }
     ],
-    "ATTUALITA": [
-      { name: "Reuters Fact Check", domain: "reuters.com/fact-check", icon: "🌐", lang: "en" }
+    "AMBIENTE_NATURA": [
+      { name: "Greenpeace", domain: "greenpeace.org", icon: "🌱", lang: "en" },
+      { name: "WWF", domain: "worldwildlife.org", icon: "🐼", lang: "en" }
+    ],
+    "DIRITTI_SOCIETA": [
+      { name: "Amnesty Int.", domain: "amnesty.org", icon: "🕊️", lang: "en" },
+      { name: "Freedom House", domain: "freedomhouse.org", icon: "🗽", lang: "en" },
+      { name: "Transparency Int.", domain: "transparency.org", icon: "🔍", lang: "en" }
     ]
   };
 
   const officialDocumentsDB = {
-    "MEDICINA": {
+    "MEDICINA_SCIENZA": {
       title: "Studi e Ricerche Mediche", icon: "🔬",
       sites: [
-        { name: "PubMed (Studi)", domain: "pubmed.ncbi.nlm.nih.gov", icon: "⚕️", lang: "en" },
-        { name: "Istituto Superiore di Sanità (ISS)", domain: "epicentro.iss.it", icon: "🇮🇹", lang: "it" },
-        { name: "World Health Org", domain: "who.int", icon: "🌐", lang: "en" }
+        { name: "PubMed", domain: "pubmed.ncbi.nlm.nih.gov", icon: "⚕️", lang: "en" },
+        { name: "Cochrane Library", domain: "cochranelibrary.com", icon: "📚", lang: "en" },
+        { name: "Istituto Superiore di Sanità", domain: "iss.it", icon: "🇮🇹", lang: "it" }
       ]
     },
-    "POLITICA": {
+    "POLITICA_LEGALE": {
       title: "Leggi e Sentenze Ufficiali", icon: "⚖️",
       sites: [
         { name: "Gazzetta Ufficiale", domain: "gazzettaufficiale.it", icon: "🇮🇹", lang: "it" },
-        { name: "Corte di Cassazione", domain: "cortedicassazione.it", icon: "🏛️", lang: "it" },
+        { name: "Normattiva", domain: "normattiva.it", icon: "⚖️", lang: "it" },
         { name: "EUR-Lex (Leggi UE)", domain: "eur-lex.europa.eu", icon: "🇪🇺", lang: "it" }
       ]
     },
-    "ECONOMIA": {
+    "ECONOMIA_STATISTICA": {
       title: "Dati e Statistiche Ufficiali", icon: "📊",
       sites: [
         { name: "ISTAT", domain: "istat.it", icon: "📈", lang: "it" },
-        { name: "Eurostat", domain: "ec.europa.eu/eurostat", icon: "🇪🇺", lang: "en" },
+        { name: "Eurostat", domain: "ec.europa.eu", icon: "🇪🇺", lang: "en" },
         { name: "Banca d'Italia", domain: "bancaditalia.it", icon: "🏦", lang: "it" }
       ]
     },
-    "STORIA_MISTERO": {
+    "STORIA_CULTURA": {
       title: "Archivi e Ricerca Accademica", icon: "📚",
       sites: [
         { name: "JSTOR (Archivi)", domain: "jstor.org", icon: "🏛️", lang: "en" },
-        { name: "Google Scholar", domain: "scholar.google.it", icon: "🎓", lang: "it" },
-        { name: "Academia.edu", domain: "academia.edu", icon: "🎓", lang: "en" }
+        { name: "Google Scholar", domain: "scholar.google.com", icon: "🎓", lang: "it" },
+        { name: "Internet Archive", domain: "archive.org", icon: "🏛️", lang: "en" }
       ]
     },
-    "ATTUALITA": {
-      title: "Dati e Statistiche Sociali", icon: "📊",
+    "AMBIENTE_NATURA": {
+      title: "Dati Climatici e Ambientali", icon: "🌍",
       sites: [
-        { name: "ISTAT", domain: "istat.it", icon: "📈", lang: "it" },
-        { name: "Eurostat", domain: "ec.europa.eu/eurostat", icon: "🇪🇺", lang: "en" }
+        { name: "Global Forest Watch", domain: "globalforestwatch.org", icon: "🌲", lang: "en" },
+        { name: "Climate Watch", domain: "climatewatchdata.org", icon: "🌡️", lang: "en" }
+      ]
+    },
+    "DIRITTI_SOCIETA": {
+      title: "Report ONG e Diritti Umani", icon: "👁️",
+      sites: [
+        { name: "Amnesty International", domain: "amnesty.org", icon: "🕊️", lang: "en" },
+        { name: "Human Rights Watch", domain: "hrw.org", icon: "👁️", lang: "en" },
+        { name: "UNHCR Data", domain: "unhcr.org", icon: "🤝", lang: "en" }
       ]
     }
   };
 
+  // Database massivo completo per il menu a tendina "Ricerca Manuale"
   const manualCategoriesDB = {
     "FACT_CHECKING": [
-      { name: "Facta.news", domain: "facta.news" },
-      { name: "BUTAC", domain: "butac.it" },
+      { name: "CICAP", domain: "cicap.org" },
+      { name: "CICAP Edizioni", domain: "cicap.org/n/rivista" },
+      { name: "Facta", domain: "facta.news" },
       { name: "Pagella Politica", domain: "pagellapolitica.it" },
-      { name: "Open Fact-Checking", domain: "open.online" },
+      { name: "MedBunker", domain: "medbunker.blogspot.com" },
+      { name: "Open Online Fact-Checking", domain: "open.online/tag/fact-checking" },
+      { name: "Bufale.net", domain: "bufale.net" },
+      { name: "Il Fatto Verificato", domain: "ilfattoverificato.it" },
       { name: "Snopes", domain: "snopes.com" },
-      { name: "Reuters Fact Check", domain: "reuters.com/fact-check" },
-      { name: "CICAP", domain: "cicap.org" }
+      { name: "PolitiFact", domain: "politifact.com" },
+      { name: "FactCheck.org", domain: "factcheck.org" },
+      { name: "Full Fact (UK)", domain: "fullfact.org" },
+      { name: "AFP Factuel", domain: "factuel.afp.com" },
+      { name: "Correctiv", domain: "correctiv.org" },
+      { name: "EFE Verifica", domain: "efe.com/efe-verifica" },
+      { name: "Maldita.es", domain: "maldita.es" },
+      { name: "Les Décodeurs", domain: "lemonde.fr/les-decodeurs" },
+      { name: "BOOM Live", domain: "boomlive.in" },
+      { name: "Africa Check", domain: "africacheck.org" },
+      { name: "IFCN", domain: "ifcncodeofprinciples.poynter.org" },
+      { name: "Duke Reporters' Lab", domain: "reporterslab.org/fact-checking" },
+      { name: "Media Bias/Fact Check", domain: "mediabiasfactcheck.com" },
+      { name: "NewsGuard", domain: "newsguardtech.com" },
+      { name: "First Draft", domain: "firstdraftnews.org" }
     ],
-    "STUDI": [
+    "SCIENZA_DIVULGAZIONE": [
+      { name: "Nature", domain: "nature.com" },
+      { name: "Science (AAAS)", domain: "science.org" },
+      { name: "PNAS", domain: "pnas.org" },
+      { name: "Cell", domain: "cell.com" },
+      { name: "Scientific Reports", domain: "nature.com/srep" },
+      { name: "eLife", domain: "elifesciences.org" },
+      { name: "PLOS ONE", domain: "journals.plos.org/plosone" },
+      { name: "F1000Research", domain: "f1000research.com" },
+      { name: "NEJM", domain: "nejm.org" },
+      { name: "The Lancet", domain: "thelancet.com" },
+      { name: "JAMA", domain: "jamanetwork.com" },
+      { name: "BMJ", domain: "bmj.com" },
+      { name: "Annals of Internal Medicine", domain: "acpjournals.org" },
+      { name: "CMAJ", domain: "cmaj.ca" },
+      { name: "Mayo Clinic", domain: "mayoclinicproceedings.org" },
+      { name: "AJPH", domain: "ajph.aphapublications.org" },
+      { name: "Epidemiology & Infection", domain: "cambridge.org" },
+      { name: "Cochrane Library", domain: "cochranelibrary.com" },
+      { name: "Physical Review Letters", domain: "journals.aps.org" },
+      { name: "Physical Review", domain: "journals.aps.org" },
+      { name: "JACS", domain: "pubs.acs.org" },
+      { name: "Angewandte Chemie", domain: "onlinelibrary.wiley.com" },
+      { name: "Annals of Mathematics", domain: "annals.math.princeton.edu" },
+      { name: "IEEE Spectrum", domain: "spectrum.ieee.org" },
+      { name: "ACM", domain: "cacm.acm.org" },
+      { name: "MIT Tech Review", domain: "technologyreview.com" },
+      { name: "arXiv", domain: "arxiv.org" },
+      { name: "Wired", domain: "wired.com" },
+      { name: "Ars Technica", domain: "arstechnica.com" },
+      { name: "Current Biology", domain: "cell.com" },
+      { name: "PLOS Biology", domain: "journals.plos.org" },
+      { name: "Journal of Neuroscience", domain: "jneurosci.org" },
+      { name: "Nature Neuroscience", domain: "nature.com/neuro" },
+      { name: "Ecology Letters", domain: "onlinelibrary.wiley.com" },
+      { name: "Conservation Biology", domain: "conbio.onlinelibrary.wiley.com" },
+      { name: "National Geographic", domain: "nationalgeographic.com" },
+      { name: "iNaturalist", domain: "inaturalist.org" },
+      { name: "WWF Science", domain: "worldwildlife.org" },
+      { name: "Nature Climate Change", domain: "nature.com/nclimate" },
+      { name: "Global Change Biology", domain: "onlinelibrary.wiley.com" },
+      { name: "American Historical Review", domain: "academic.oup.com" },
+      { name: "Past & Present", domain: "academic.oup.com" },
+      { name: "Journal of World History", domain: "uhpress.hawaii.edu" },
+      { name: "Rivista Storica Italiana", domain: "edizioniesi.it" },
+      { name: "History Today", domain: "historytoday.com" },
+      { name: "Annales", domain: "ehess.fr" },
+      { name: "Treccani", domain: "treccani.it" },
+      { name: "Encyclopedia Britannica", domain: "britannica.com" }
+    ],
+    "ARCHIVI_ACCADEMICI": [
+      { name: "JSTOR", domain: "jstor.org" },
+      { name: "Google Scholar", domain: "scholar.google.com" },
+      { name: "BASE", domain: "base-search.net" },
+      { name: "OpenAIRE", domain: "explore.openaire.eu" },
+      { name: "CORE", domain: "core.ac.uk" },
+      { name: "Semantic Scholar", domain: "semanticscholar.org" },
+      { name: "Academia.edu", domain: "academia.edu" },
+      { name: "ResearchGate", domain: "researchgate.net" },
+      { name: "Zenodo", domain: "zenodo.org" },
+      { name: "Internet Archive Scholar", domain: "scholar.archive.org" },
       { name: "PubMed", domain: "pubmed.ncbi.nlm.nih.gov" },
-      { name: "Google Scholar", domain: "scholar.google.it" },
-      { name: "Istituto Superiore di Sanità (ISS)", domain: "epicentro.iss.it" },
-      { name: "MedBunker", domain: "medbunker.it" },
-      { name: "Science Feedback", domain: "sciencefeedback.co" }
+      { name: "PMC", domain: "ncbi.nlm.nih.gov" },
+      { name: "Europe PMC", domain: "europepmc.org" },
+      { name: "ClinicalTrials.gov", domain: "clinicaltrials.gov" },
+      { name: "WHO IRIS", domain: "iris.who.int" },
+      { name: "bioRxiv", domain: "biorxiv.org" },
+      { name: "medRxiv", domain: "medrxiv.org" },
+      { name: "ClinicalKey", domain: "clinicalkey.com" },
+      { name: "Cochrane Library", domain: "cochranelibrary.com" },
+      { name: "UpToDate", domain: "uptodate.com" },
+      { name: "IEEE Xplore", domain: "ieeexplore.ieee.org" },
+      { name: "ACM Digital Library", domain: "dl.acm.org" },
+      { name: "Scopus", domain: "scopus.com" },
+      { name: "Web of Science", domain: "webofscience.com" },
+      { name: "NASA ADS", domain: "ui.adsabs.harvard.edu" },
+      { name: "ChemRxiv", domain: "chemrxiv.org" },
+      { name: "SSRN", domain: "ssrn.com" },
+      { name: "EconPapers", domain: "econpapers.repec.org" },
+      { name: "NBER", domain: "nber.org" },
+      { name: "IDEAS/RePEC", domain: "ideas.repec.org" },
+      { name: "PhilPapers", domain: "philpapers.org" },
+      { name: "PsycINFO", domain: "psycnet.apa.org" },
+      { name: "Project MUSE", domain: "muse.jhu.edu" },
+      { name: "Europeana", domain: "europeana.eu" },
+      { name: "Archivio di Stato", domain: "archivi.beniculturali.it" },
+      { name: "Archivio Storico Camera", domain: "storia.camera.it" },
+      { name: "DPLA", domain: "dp.la" },
+      { name: "Gallica", domain: "gallica.bnf.fr" },
+      { name: "Perseus", domain: "perseus.tufts.edu" },
+      { name: "HathiTrust", domain: "hathitrust.org" },
+      { name: "Library of Congress", domain: "loc.gov" },
+      { name: "Internet Archive", domain: "archive.org" },
+      { name: "HeinOnline", domain: "heinonline.org" },
+      { name: "EUR-Lex", domain: "eur-lex.europa.eu" }
     ],
-    "AGENZIE": [
-      { name: "ANSA", domain: "ansa.it" },
-      { name: "AGI", domain: "agi.it" },
-      { name: "Adnkronos", domain: "adnkronos.com" },
-      { name: "Reuters", domain: "reuters.com" }
-    ],
-    "DATI": [
+    "STATISTICA_DATI": [
       { name: "ISTAT", domain: "istat.it" },
-      { name: "Eurostat", domain: "ec.europa.eu/eurostat" },
+      { name: "ISS", domain: "iss.it" },
       { name: "Banca d'Italia", domain: "bancaditalia.it" },
-      { name: "Gazzetta Ufficiale", domain: "gazzettaufficiale.it" }
+      { name: "MEF", domain: "mef.gov.it" },
+      { name: "INPS", domain: "inps.it" },
+      { name: "INVALSI", domain: "invalsi.it" },
+      { name: "OPENPOLIS", domain: "openpolis.it" },
+      { name: "Fondazione GIMBE", domain: "gimbe.org" },
+      { name: "Eurostat", domain: "ec.europa.eu" },
+      { name: "Banca Centrale Europea", domain: "ecb.europa.eu" },
+      { name: "OCSE/OECD", domain: "stats.oecd.org" },
+      { name: "OCSE Data", domain: "data.oecd.org" },
+      { name: "EMCDDA", domain: "emcdda.europa.eu" },
+      { name: "World Bank Open Data", domain: "data.worldbank.org" },
+      { name: "UN Data", domain: "data.un.org" },
+      { name: "WHO Data", domain: "data.who.int" },
+      { name: "IMF Data", domain: "imf.org" },
+      { name: "FAO", domain: "fao.org" },
+      { name: "UNDP", domain: "hdr.undp.org" },
+      { name: "UNHCR Data", domain: "unhcr.org" },
+      { name: "ILO", domain: "ilostat.ilo.org" },
+      { name: "Our World in Data", domain: "ourworldindata.org" },
+      { name: "Gapminder", domain: "gapminder.org" },
+      { name: "Statista", domain: "statista.com" },
+      { name: "Global Health Observatory", domain: "who.int" },
+      { name: "UNICEF Data", domain: "data.unicef.org" },
+      { name: "WID", domain: "wid.world" },
+      { name: "V-Dem", domain: "v-dem.net" },
+      { name: "WGI", domain: "info.worldbank.org" },
+      { name: "Climate Watch", domain: "climatewatchdata.org" },
+      { name: "Global Carbon Project", domain: "globalcarbonproject.org" },
+      { name: "Numbeo", domain: "numbeo.com" },
+      { name: "Index Mundi", domain: "indexmundi.com" }
     ],
-    "ASSOCIAZIONI": [
+    "GIURIDICO_LEGALE": [
+      { name: "Gazzetta Ufficiale", domain: "gazzettaufficiale.it" },
+      { name: "Normattiva", domain: "normattiva.it" },
+      { name: "Cassazione", domain: "cortedicassazione.it" },
+      { name: "Corte Costituzionale", domain: "cortecostituzionale.it" },
+      { name: "Consiglio di Stato", domain: "giustizia-amministrativa.it" },
+      { name: "TAR", domain: "giustizia-amministrativa.it" },
+      { name: "CSM", domain: "csm.it" },
+      { name: "Ministero Giustizia", domain: "giustizia.it" },
+      { name: "Camera dei Deputati", domain: "camera.it" },
+      { name: "Senato", domain: "senato.it" },
+      { name: "AGCM", domain: "agcm.it" },
+      { name: "Garante Privacy", domain: "garanteprivacy.it" },
+      { name: "ANAC", domain: "anticorruzione.it" },
+      { name: "DeJure", domain: "iusexplorer.it" },
+      { name: "Altalex", domain: "altalex.com" },
+      { name: "Brocardi", domain: "brocardi.it" },
+      { name: "EUR-Lex", domain: "eur-lex.europa.eu" },
+      { name: "Corte Giustizia UE", domain: "curia.europa.eu" },
+      { name: "EDPS", domain: "edps.europa.eu" },
+      { name: "EBA", domain: "eba.europa.eu" },
+      { name: "UNHCR", domain: "unhcr.org" },
+      { name: "Corte Penale Int.", domain: "icc-cpi.int" },
+      { name: "Corte Int. Giustizia", domain: "icj-cij.org" },
+      { name: "CEDU", domain: "echr.coe.int" },
+      { name: "Commissione di Venezia", domain: "venice.coe.int" },
+      { name: "UNODC", domain: "unodc.org" },
+      { name: "WTO", domain: "wto.org" },
+      { name: "ILO NORMLEX", domain: "normlex.ilo.org" },
+      { name: "WIPO", domain: "wipo.int" },
+      { name: "UN Treaty Collection", domain: "treaties.un.org" },
+      { name: "HeinOnline", domain: "heinonline.org" },
+      { name: "Refworld", domain: "refworld.org" }
+    ],
+    "ONG_MONITORAGGIO": [
+      { name: "Freedom House", domain: "freedomhouse.org" },
+      { name: "V-Dem Institute", domain: "v-dem.net" },
+      { name: "Transparency International", domain: "transparency.org" },
+      { name: "EIU Democracy Index", domain: "eiu.com" },
+      { name: "International IDEA", domain: "idea.int" },
+      { name: "Electoral Integrity", domain: "electoralintegrityproject.com" },
+      { name: "CIVICUS Monitor", domain: "monitor.civicus.org" },
+      { name: "Liberties.eu", domain: "liberties.eu" },
+      { name: "RSF", domain: "rsf.org" },
+      { name: "CPJ", domain: "cpj.org" },
+      { name: "IPI", domain: "ipi.media" },
+      { name: "Index on Censorship", domain: "indexoncensorship.org" },
+      { name: "MFRR", domain: "mfrr.eu" },
+      { name: "Ossigeno", domain: "ossigeno.info" },
       { name: "Amnesty International", domain: "amnesty.org" },
       { name: "Human Rights Watch", domain: "hrw.org" },
-      { name: "Freedom House", domain: "freedomhouse.org" },
-      { name: "Reporters Without Borders", domain: "rsf.org" }
+      { name: "FIDH", domain: "fidh.org" },
+      { name: "Front Line Defenders", domain: "frontlinedefenders.org" },
+      { name: "Pax Christi", domain: "paxchristi.net" },
+      { name: "OHCHR", domain: "ohchr.org" },
+      { name: "Oxfam", domain: "oxfam.org" },
+      { name: "Global Witness", domain: "globalwitness.org" },
+      { name: "Article 19", domain: "article19.org" },
+      { name: "Privacy International", domain: "privacyinternational.org" },
+      { name: "EFF", domain: "eff.org" },
+      { name: "Human Rights First", domain: "humanrightsfirst.org" },
+      { name: "HRWF", domain: "hrwf.eu" },
+      { name: "Equal Rights Trust", domain: "equalrightstrust.org" },
+      { name: "IOM", domain: "iom.int" },
+      { name: "Mixed Migration", domain: "mixedmigration.org" },
+      { name: "ECRE", domain: "ecre.org" },
+      { name: "AIDA", domain: "asylumineurope.org" },
+      { name: "Greenpeace", domain: "greenpeace.org" },
+      { name: "WWF", domain: "worldwildlife.org" },
+      { name: "Friends of the Earth", domain: "foei.org" },
+      { name: "Earthjustice", domain: "earthjustice.org" },
+      { name: "CDP", domain: "cdp.net" },
+      { name: "Global Forest Watch", domain: "globalforestwatch.org" },
+      { name: "Climate Action Tracker", domain: "climateactiontracker.org" },
+      { name: "Legambiente", domain: "legambiente.it" },
+      { name: "Rainforest Alliance", domain: "rainforest-alliance.org" },
+      { name: "IUCN", domain: "iucn.org" },
+      { name: "MSF", domain: "msf.org" },
+      { name: "Partners in Health", domain: "pih.org" },
+      { name: "PATH", domain: "path.org" },
+      { name: "GAVI", domain: "gavi.org" },
+      { name: "Global Fund", domain: "theglobalfund.org" },
+      { name: "DNDi", domain: "dndi.org" },
+      { name: "Save the Children", domain: "savethechildren.net" },
+      { name: "ActionAid", domain: "actionaid.org" },
+      { name: "CARE", domain: "care-international.org" },
+      { name: "Médecins du Monde", domain: "medecinsdumonde.org" },
+      { name: "IRC", domain: "rescue.org" },
+      { name: "Bread for the World", domain: "bread.org" },
+      { name: "Crisis Group", domain: "crisisgroup.org" },
+      { name: "SIPRI", domain: "sipri.org" },
+      { name: "Geneva Academy", domain: "geneva-academy.ch" },
+      { name: "ICRC", domain: "icrc.org" },
+      { name: "ACLED", domain: "acleddata.com" },
+      { name: "UCDP", domain: "ucdp.uu.se" },
+      { name: "GRECO", domain: "coe.int" },
+      { name: "Open Government Partnership", domain: "opengovpartnership.org" },
+      { name: "FATF", domain: "fatf-gafi.org" },
+      { name: "Global Integrity", domain: "globalintegrity.org" },
+      { name: "OpenSecrets", domain: "opensecrets.org" },
+      { name: "Follow The Money", domain: "followthemoney.eu" },
+      { name: "ECRI", domain: "coe.int" },
+      { name: "FRA", domain: "fra.europa.eu" },
+      { name: "COSPE", domain: "cospe.org" },
+      { name: "Centro FARE", domain: "centrofare.eu" },
+      { name: "ADL", domain: "adl.org" },
+      { name: "SPLC", domain: "splcenter.org" },
+      { name: "Brookings", domain: "brookings.edu" },
+      { name: "CFR", domain: "cfr.org" },
+      { name: "Carnegie", domain: "carnegieendowment.org" },
+      { name: "Chatham House", domain: "chathamhouse.org" },
+      { name: "IAI", domain: "iai.it" },
+      { name: "ISPI", domain: "ispionline.it" },
+      { name: "Bruegel", domain: "bruegel.org" },
+      { name: "ECFR", domain: "ecfr.eu" },
+      { name: "RAND", domain: "rand.org" },
+      { name: "Wilson Center", domain: "wilsoncenter.org" },
+      { name: "ODI", domain: "odi.org" }
     ]
   };
 
@@ -1034,7 +1304,7 @@
 COMPITO:
 1. Analizza la notizia fornita (usa Google Search integrato se necessario).
 2. VERDETTO e SINTESI: Fornisci il verdetto (VERO, FALSO, PARZIALMENTE_FALSO, NESSUN_RISCONTRO) e una spiegazione.
-3. CATEGORIA: Scegli tra: "POLITICA", "ECONOMIA", "MEDICINA" (scienza/salute), "STORIA_MISTERO", "ATTUALITA".
+3. CATEGORIA: Scegli una tra queste categorie: "ATTUALITA_CRONACA", "POLITICA_LEGALE", "ECONOMIA_STATISTICA", "MEDICINA_SCIENZA", "STORIA_CULTURA", "AMBIENTE_NATURA", "DIRITTI_SOCIETA".
 4. IS_VIRAL_HOAX: true o false. Bufala allarmistica/complottista? 'true'.
 5. KEYWORDS IT: 2-3 parole chiave in italiano.
 6. KEYWORDS EN: 2-3 parole chiave tradotte in inglese.
@@ -1151,7 +1421,7 @@ Rispondi ESCLUSIVAMENTE con JSON:
     const keywordsIT = cleanKeywords(data.keywords_it);
     const keywordsEN = cleanKeywords(data.keywords_en);
     const isViralHoax = data.is_viral_hoax === true || data.is_viral_hoax === "true";
-    const category = data.category || "ATTUALITA";
+    const category = data.category || "DIRITTI_SOCIETA";
     
     const resultsAreaEl = document.getElementById('results-area');
     const sourcesSectionTitle = document.getElementById('sourcesSectionTitle');
@@ -1160,19 +1430,26 @@ Rispondi ESCLUSIVAMENTE con JSON:
     advancedManualSearch.style.display = 'block';
     advManualInput.value = '';
 
+    // Assegnazione logica delle fonti: Priorità Agenzie di Stampa per Politica e Attualità
     let activeSites = []; 
-    if (finalVerdict === "VERO") { activeSites = [...sitesDatabase["AGENZIE_STAMPA"]]; } 
-    else if (finalVerdict === "PARZIALMENTE_FALSO") {
-      activeSites = category === "MEDICINA" ? [...sitesDatabase["MEDICINA"]] : [...sitesDatabase["AGENZIE_STAMPA"], ...sitesDatabase["GENERAL"]];
-      if (isViralHoax) activeSites = activeSites.concat(sitesDatabase["GENERAL"]);
-      if (sitesDatabase[category] && category !== "MEDICINA") activeSites = activeSites.concat(sitesDatabase[category]);
-    } else {
-      activeSites = category === "MEDICINA" ? [...sitesDatabase["MEDICINA"]] : [...sitesDatabase["GENERAL"]];
-      if (isViralHoax) activeSites = activeSites.concat(sitesDatabase["GENERAL"]);
-      activeSites = sitesDatabase[category] && category !== "MEDICINA" ? activeSites.concat(sitesDatabase[category]) : activeSites.concat(sitesDatabase["ATTUALITA"]);
+    
+    if (["POLITICA_LEGALE", "ATTUALITA_CRONACA", "ECONOMIA_STATISTICA"].includes(category)) {
+        activeSites = [...(sitesDatabase["AGENZIE_STAMPA"] || [])];
     }
 
-    activeSites = [...new Set(activeSites)];
+    // Aggiungiamo i fact-checker generalisti
+    activeSites = activeSites.concat(sitesDatabase["GENERAL_FACT_CHECKING"] || []);
+
+    // Aggiungiamo i siti specifici della categoria
+    if (sitesDatabase[category] && category !== "ATTUALITA_CRONACA") {
+        activeSites = activeSites.concat(sitesDatabase[category]);
+    }
+
+    // Filtra i duplicati basandosi sul dominio (evita doppioni se un sito è in più liste)
+    activeSites = activeSites.filter((site, index, self) =>
+      index === self.findIndex((t) => t.domain === site.domain)
+    );
+    
     const sourcesGrid = document.getElementById('sourcesGrid');
     sourcesGrid.innerHTML = '';
     
