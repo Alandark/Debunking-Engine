@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Istruzioni e Sicurezza | Debunking Engine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #0d0f14;
+      --surface:     #13161e;
+      --card:        #1a1e28;
+      --border:      #252b3b;
+      --accent:      #e8c547;
+      --accent2:     #4fc3f7;
+      --accent3:     #a78bfa;
+      --text:        #e2e8f0;
+      --muted:       #7a8499;
+      
+      --verdict-vero:   #34d399;
+      --verdict-falso:  #ef4444;
+      --verdict-parziale: #fb923c;
+      --verdict-sconosciuto: #7a8499;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      background-image: url('sfondoDE.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* OVERLAY SCURO E NOISE TEXTURE PER LEGGIBILITÀ */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-color: rgba(13, 15, 20, 0.85);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+    header {
+      padding: 4rem 0 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.95rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Stili per il Logo */
+    .main-logo {
+      max-width: 90vw;
+      width: 260px;
+      height: auto;
+      margin: 0.5rem auto 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border);
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .main-logo:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(79, 195, 247, 0.2);
+      border-color: var(--accent2);
+    }
+
+    .nav-buttons {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .btn-nav {
+      display: inline-block;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      transition: all 0.2s;
+    }
+    
+    .btn-nav:hover {
+      background: rgba(26, 30, 40, 0.85);
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* --- STILI SPECIFICI PER LA PAGINA ISTRUZIONI --- */
+    .instructions-container {
+      background: rgba(19, 22, 30, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 3rem;
+      margin-bottom: 3rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+
+    .instructions-container h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      font-weight: 900;
+      line-height: 1.2;
+      color: #fff;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .instructions-container h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .instructions-container h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 3rem 0 1rem 0;
+    }
+
+    .instructions-container h3 {
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--accent2);
+      margin: 2rem 0 0.8rem 0;
+    }
+
+    .instructions-container p {
+      font-size: 1.1rem;
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 1.2rem;
+    }
+
+    .instructions-container ul, .instructions-container ol {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+
+    .instructions-container li {
+      margin-bottom: 0.8rem;
+      line-height: 1.7;
+    }
+
+    .instructions-container a {
+      color: var(--accent2);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--accent2);
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .instructions-container a:hover {
+      color: #fff;
+      border-color: #fff;
+    }
+
+    .instructions-container strong {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .api-example {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.8rem 1.2rem;
+      border-radius: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--verdict-vero);
+      margin: 1rem 0;
+      font-size: 1rem;
+      word-break: break-all;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    footer { 
+      margin-top: 5rem; 
+      padding-top: 2rem; 
+      border-top: 1px solid var(--border); 
+      font-size: .78rem; 
+      color: var(--muted); 
+      font-family: 'IBM Plex Mono', monospace; 
+      display: flex; 
+      flex-wrap: wrap; 
+      justify-content: center; 
+      text-align: center;
+      gap: 1rem; 
+    }
+
+    @media (max-width: 768px) {
+      .instructions-container { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Documentazione Ufficiale</div>
+    <img src="logoDE.jpg" alt="Debunking Engine Logo" class="main-logo" />
+  </header>
+
+  <div class="nav-buttons">
+    <a href="index.html" class="btn-nav">← Torna a Debunking Engine</a>
+  </div>
+
+  <div class="instructions-container">
+    <h1><em>Debunking Engine</em><br>Istruzioni e note di sicurezza</h1>
+    
+    <h2>Istruzioni per la creazione delle API Key</h2>
+    
+    <h3>Introduzione</h3>
+    <p>Per utilizzare tutte le funzionalità basate sull'Intelligenza Artificiale integrate in Debunking Engine, è necessario configurare almeno una chiave API valida.</p>
+    <p>L'applicazione supporta due tipologie di chiavi:</p>
+    <ul>
+      <li><strong>API Key Gemini (Obbligatoria)</strong> – necessaria per il funzionamento dei servizi AI principali.</li>
+      <li><strong>API Key Google Fact Check (Opzionale)</strong> – utilizzabile per integrare le verifiche con il database pubblico di fact-checking di Google.</li>
+    </ul>
+    <p>Senza una Gemini API Key il sistema non sarà in grado di elaborare richieste, analizzare contenuti o generare report di verifica.</p>
+    <p>La Google Fact Check API Key, invece, è facoltativa: la sua assenza non impedisce il funzionamento dell'applicazione, ma limita alcune funzionalità avanzate di verifica automatica.</p>
+
+    <hr style="border: 0; height: 1px; background: var(--border); margin: 3rem 0;">
+
+    <h2>1. Creazione della Gemini API Key (Obbligatoria)</h2>
+    <p>Per ottenere una chiave API Gemini è necessario possedere un account Google.<br>
+    La documentazione ufficiale è disponibile al seguente indirizzo:<br>
+    <a href="https://ai.google.dev/gemini-api/docs/api-key?hl=it" target="_blank" rel="noopener noreferrer">https://ai.google.dev/gemini-api/docs/api-key?hl=it</a></p>
+    
+    <h3>Procedura passo-passo</h3>
+    <ol>
+      <li><strong>Accedere a Google AI Studio</strong><br>
+      Aprire il link indicato sopra e accedere con il proprio account Google. Se richiesto, completare la procedura di accesso o di registrazione.</li>
+      
+      <li><strong>Accedere alla sezione API Key</strong><br>
+      Una volta entrati in Google AI Studio, individuare la sezione dedicata alla gestione delle chiavi API. Google potrebbe mostrare direttamente il pulsante per la creazione di una nuova chiave oppure richiedere la selezione di un progetto Google Cloud.</li>
+      
+      <li><strong>Creare una nuova chiave</strong><br>
+      Selezionare l'opzione "Crea API Key" (o "Create API Key"). Qualora venga richiesto: selezionare un progetto esistente oppure creare un nuovo progetto Google Cloud. Al termine della procedura Google genererà automaticamente una nuova chiave API.</li>
+      
+      <li><strong>Copiare la chiave generata</strong><br>
+      La chiave verrà mostrata sotto forma di una stringa alfanumerica univoca. Esempio:<br>
+      <span class="api-example">AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</span><br>
+      <em>Il valore mostrato nell'esempio è puramente illustrativo. La chiave reale sarà differente.</em></li>
+      
+      <li><strong>Configurare Debunking Engine</strong><br>
+      Tornare alla schermata principale di Debunking Engine. Nel campo <strong>API Key Gemini (Obbligatoria)</strong> incollare la chiave appena generata. Una volta inserita correttamente, l'applicazione potrà utilizzare i servizi di Intelligenza Artificiale forniti da Gemini per l'analisi e la verifica dei contenuti.</li>
+    </ol>
+
+    <hr style="border: 0; height: 1px; background: var(--border); margin: 3rem 0;">
+
+    <h2>2. Creazione della Google Fact Check API Key (Opzionale)</h2>
+    <p>La Google Fact Check API consente a Debunking Engine di interrogare il database pubblico di verifica dei fatti messo a disposizione da Google, contenente migliaia di fact-check provenienti da organizzazioni e verificatori indipendenti di tutto il mondo.</p>
+    <p>L'utilizzo di questa API è facoltativo. Debunking Engine può funzionare correttamente anche senza questa chiave, ma la sua configurazione permette di ampliare le fonti consultate durante alcune operazioni di verifica.</p>
+    <p>La documentazione ufficiale è disponibile al seguente indirizzo:<br>
+    <a href="https://developers.google.com/fact-check/tools/api?hl=it" target="_blank" rel="noopener noreferrer">https://developers.google.com/fact-check/tools/api?hl=it</a></p>
+
+    <h3>Cos'è la Fact Check API</h3>
+    <p>La Fact Check API fornisce accesso al database di verifica dei fatti gestito da Google Fact Check Explorer. Attraverso questa interfaccia è possibile effettuare ricerche su affermazioni, notizie e dichiarazioni che sono già state analizzate da organizzazioni di fact-checking riconosciute.</p>
+    <p>Quando configurata all'interno di Debunking Engine, questa API consente al sistema di integrare i risultati delle proprie analisi con eventuali verifiche già pubblicate nel circuito internazionale del fact-checking.</p>
+
+    <h3>Procedura passo-passo</h3>
+    <ol>
+      <li><strong>Accedere alla documentazione ufficiale</strong><br>
+      Aprire il seguente indirizzo: <a href="https://developers.google.com/fact-check/tools/api?hl=it" target="_blank" rel="noopener noreferrer">https://developers.google.com/fact-check/tools/api?hl=it</a>. Effettuare l'accesso con il proprio account Google se richiesto.</li>
+      
+      <li><strong>Creare o selezionare un progetto Google Cloud</strong><br>
+      Per utilizzare la Fact Check API è necessario disporre di un progetto Google Cloud. Se non si possiede già un progetto: Accedere alla Google Cloud Console, selezionare Nuovo Progetto, assegnare un nome al progetto e completare la creazione. Se si dispone già di un progetto attivo, sarà possibile utilizzarlo senza crearne uno nuovo.</li>
+      
+      <li><strong>Abilitare la Fact Check Tools API</strong><br>
+      Dalla pagina della documentazione o dalla Google Cloud Console, individuare la sezione dedicata all'attivazione dell'API. Selezionare l'opzione per abilitare la Fact Check Tools API all'interno del progetto scelto. L'operazione potrebbe richiedere alcuni secondi per essere completata.</li>
+      
+      <li><strong>Generare una API Key</strong><br>
+      Una volta abilitata l'API: Aprire la sezione Credenziali della Google Cloud Console. Selezionare Crea Credenziali. Scegliere Chiave API. Attendere la generazione automatica della chiave. Google mostrerà una stringa alfanumerica simile alla seguente:<br>
+      <span class="api-example">AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</span><br>
+      <em>Il valore mostrato è soltanto un esempio illustrativo.</em></li>
+      
+      <li><strong>Copiare la chiave</strong><br>
+      Una volta generata la chiave: Copiarla integralmente. Verificare che non siano presenti spazi aggiuntivi all'inizio o alla fine. Conservare la finestra aperta fino al completamento della configurazione.</li>
+      
+      <li><strong>Configurare Debunking Engine</strong><br>
+      Tornare alla schermata principale di Debunking Engine. Nel campo <strong>API Key Google Fact Check (Opzionale)</strong> incollare la chiave appena generata. Una volta configurata, il sistema potrà utilizzare il database Google Fact Check come fonte aggiuntiva durante le operazioni di verifica e analisi delle notizie.</li>
+    </ol>
+
+    <hr style="border: 0; height: 1px; background: var(--border); margin: 3rem 0;">
+
+    <h2>3. Note sulla Sicurezza delle API Key</h2>
+    <p>La sicurezza delle API Key rappresenta un aspetto fondamentale per l'utilizzo corretto di Debunking Engine. L'applicazione è stata progettata seguendo un modello di funzionamento che minimizza l'esposizione delle credenziali degli utenti e non richiede la memorizzazione delle chiavi su server esterni gestiti dal progetto.</p>
+
+    <h3>Come vengono gestite le API Key</h3>
+    <p>Quando un utente inserisce una API Key all'interno di Debunking Engine, la chiave viene utilizzata esclusivamente dal browser dell'utente per comunicare con i servizi selezionati.</p>
+    <p>Le API Key non vengono archiviate nei file pubblicati del progetto, non vengono incorporate nel codice sorgente dell'applicazione e non vengono distribuite insieme al sito web. Questo significa che il repository pubblico contenente l'applicazione non include alcuna credenziale privata.</p>
+
+    <h3>Pubblicazione dell'applicazione e protezione delle chiavi</h3>
+    <p>Debunking Engine è una applicazione web di tipo client-side. Quando il sito viene pubblicato su GitHub Pages o su un altro servizio di hosting statico, vengono distribuiti esclusivamente:</p>
+    <ul>
+      <li>il codice dell'applicazione;</li>
+      <li>le risorse grafiche;</li>
+      <li>i file necessari al funzionamento dell'interfaccia.</li>
+    </ul>
+    <p>Le API Key degli utenti non fanno parte di tali file e non vengono pubblicate insieme al progetto. Anche nel caso in cui una persona esamini il codice sorgente della pagina o scarichi l'intero repository, non potrà visualizzare le API Key utilizzate dagli utenti.</p>
+
+    <h3>Isolamento tra utenti</h3>
+    <p>Ogni utente utilizza Debunking Engine attraverso il proprio browser e il proprio dispositivo. Le chiavi inserite da un utente rimangono associate esclusivamente alla sessione e all'ambiente locale del browser utilizzato.</p>
+    <p>Di conseguenza:</p>
+    <ul>
+      <li>gli utenti non possono visualizzare le API Key di altri utenti;</li>
+      <li>le chiavi non vengono condivise tra dispositivi differenti;</li>
+      <li>ogni installazione del browser mantiene i propri dati separati dagli altri.</li>
+    </ul>
+    <p>L'utilizzo dell'applicazione da parte di un utente non consente in alcun modo l'accesso alle credenziali inserite da altri utilizzatori del servizio.</p>
+
+    <h3>Cosa succede quando un utente visita il sito</h3>
+    <p>Quando viene aperto il link del sito accade quanto segue:</p>
+    <ul>
+      <li>Il browser dell'utente scarica e carica il file <code>index.html</code> del progetto.</li>
+      <li>L'applicazione richiede l'inserimento della propria API Key.</li>
+    </ul>
+    <p>Ogni browser funziona in modo completamente isolato rispetto agli altri utenti. Questo significa che la API Key inserita viene salvata esclusivamente nel browser locale dell'utente, nel database "localStorage" (ad esempio su Chrome, Firefox o Edge).</p>
+    <p>Questa informazione <strong>non viene inviata al server né condivisa con altri utenti</strong>. Di conseguenza, l'accesso allo stesso link da parte di un altro utente o da un dispositivo differente non consente alcuna condivisione dei dati: ogni browser mantiene un ambiente indipendente e non ha accesso a informazioni salvate altrove, incluse eventuali API Key.</p>
+
+    <h3>Rimozione delle API Key</h3>
+    <p>Debunking Engine consente in qualsiasi momento di eliminare le API Key precedentemente inserite. Quando una chiave viene rimossa attraverso il pulsante <strong>✖</strong> nell'interfaccia dell'applicazione, essa viene eliminata dal browser dell'utente e non rimane associata al sito.</p>
+    <p>Poiché le chiavi non vengono archiviate su server centrali, la loro eliminazione comporta la rimozione completa delle credenziali dal dispositivo utilizzato.</p>
+
+    <hr style="border: 0; height: 1px; background: var(--border); margin: 3rem 0;">
+
+    <h2>Conclusioni</h2>
+    <p>Debunking Engine è stato progettato per evitare la pubblicazione e la distribuzione delle API Key all'interno del codice dell'applicazione. Le credenziali vengono gestite localmente dal browser dell'utente e non sono incluse nei file pubblicati online.</p>
+    <p>Questo approccio riduce significativamente il rischio di esposizione accidentale delle chiavi e consente agli utenti di mantenere il pieno controllo delle proprie credenziali durante l'utilizzo della piattaforma.</p>
+  </div>
+
+  <div class="nav-buttons">
+    <a href="index.html" class="btn-nav">← Torna a Debunking Engine</a>
+  </div>
+
+  <footer>
+    <span>Sistema di Fact-Checking Open Source</span>
+    <span>Istruzioni e Sicurezza</span>
+  </footer>
+
+</div>
+</body>
+</html>

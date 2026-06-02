@@ -109,10 +109,37 @@
       margin-bottom: 0.2rem;
       font-weight: 500;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
     }
     .api-settings-header em {
       font-style: normal;
       color: var(--accent);
+    }
+
+    /* Icona Istruzioni */
+    .help-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(232, 197, 71, 0.1);
+      color: var(--accent);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid rgba(232, 197, 71, 0.4);
+      margin-left: 0.6rem;
+      transition: all 0.2s ease;
+    }
+    .help-icon:hover {
+      background: var(--accent);
+      color: var(--bg);
+      box-shadow: 0 0 10px rgba(232, 197, 71, 0.6);
+      transform: scale(1.1);
     }
 
     .or-divider {
@@ -429,7 +456,7 @@
     @media (max-width: 768px) {
       .top-controls-wrapper { flex-direction: column; align-items: stretch; }
       .or-divider { justify-content: center; padding: 1rem 0; }
-      .api-settings-header { white-space: normal; text-align: center; }
+      .api-settings-header { white-space: normal; text-align: center; justify-content: center; }
       .external-tool-btn { width: 100%; min-height: 100px; }
       .grid { grid-template-columns: 1fr; }
       .verdict-banner { font-size: 1.5rem; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
@@ -446,7 +473,10 @@
 
   <div class="top-controls-wrapper">
     <div class="api-settings-left">
-      <div class="api-settings-header">Inserisci le <em>API Key</em> per i servizi AI</div>
+      <div class="api-settings-header">
+        Inserisci le <em>API Key</em> per i servizi AI
+        <a href="istruzioni.html" class="help-icon" title="Istruzioni e Sicurezza API" aria-label="Istruzioni API">?</a>
+      </div>
       <div class="api-input-wrapper">
         <input type="password" id="apiKeyInput" class="api-input" placeholder="API Key Gemini (Obbligatoria)..." />
         <button id="clearApiBtn" class="btn-clear-api" title="Cancella la chiave salvata">✖</button>
@@ -909,7 +939,7 @@ Devi rispondere ESCLUSIVAMENTE con un oggetto JSON valido. Non scrivere "Ecco il
     // Sposta la Ricerca Manuale Avanzata in cima ai risultati
     document.getElementById('sourcesGrid').parentNode.insertBefore(advancedManualSearch, document.getElementById('sourcesGrid'));
     advancedManualSearch.style.display = 'block';
-    if (keywordsIT) advManualInput.value = keywordsIT;
+    advManualInput.value = ''; // Svuota il campo invece di pre-compilarlo con keywordsIT
 
     let activeSites = []; 
     if (finalVerdict === "VERO") {
