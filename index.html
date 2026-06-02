@@ -347,7 +347,6 @@
     .search-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232,197,71,0.25); }
     .search-btn:disabled { background: var(--muted); cursor: not-allowed; transform: none; box-shadow: none; }
 
-    /* Pulsantino ricerca manuale discreto */
     .btn-manual-toggle {
       background: rgba(26, 30, 40, 0.4);
       color: var(--text);
@@ -722,8 +721,14 @@
       </a>
     </div>
 
-    <div class="new-search-wrapper" style="margin-top: 2rem;">
-      <button type="button" class="btn-new-search reset-all-btn">⟲ Nuova Analisi</button>
+    <div style="background: rgba(232, 197, 71, 0.05); border: 1px dashed rgba(232, 197, 71, 0.3); border-radius: 8px; padding: 1.5rem; margin-top: 3rem; text-align: center;">
+      <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem; font-family: 'IBM Plex Sans', sans-serif; line-height: 1.5;">
+        <strong style="color: var(--accent);">⚠️ Nota sull'Affidabilità:</strong> Nessun sistema di rilevamento forense automatizzato è infallibile. L'IA può generare falsi positivi (scambiare foto vere per IA) o falsi negativi, soprattutto con foto compresse. Per una maggiore sicurezza, si consiglia di <strong>ripetere l'analisi</strong> forzando il modello a riconsiderare i pixel.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+        <button type="button" id="btnRepeatAnalysis" class="btn-new-search" style="border-color: var(--accent2); color: var(--accent2);">↺ Ripeti Analisi Foto</button>
+        <button type="button" class="btn-new-search reset-all-btn">📸 Carica Nuova Foto</button>
+      </div>
     </div>
   </div>
 
@@ -1343,18 +1348,45 @@ Rispondi ESCLUSIVAMENTE con JSON:
     setTimeout(initCropSystem, 100); btnResetCrop.style.display = 'none';
   });
 
-  const imageSystemPrompt = `Sei il 'Debunking Engine - Modulo Analisi Forense Immagini'.
-COMPITO:
-Analizza accuratamente l'immagine fornita. Cerca artefatti da IA (Midjourney, DALL-E, etc), segni di fotoritocco, problemi di geometria, o se appare genuina.
-Rispondi ESCLUSIVAMENTE con un JSON valido:
+  // --- NUOVO PROMPT FORENSE: TOPOLOGIA VS TEXTURE ---
+  const imageSystemPrompt = `Sei un Analista Forense di Immagini. Il tuo compito è distinguere tra 3 categorie: Foto Vere, Foto Ritoccate (Photoshop) e Immagini Generate da IA.
+
+REGOLA FONDAMENTALE (Topologia vs Texture):
+L'IA generativa (Midjourney/Flux) fallisce nella TOPOLOGIA e FISICA degli oggetti (crea cose che si fondono, forme illogiche).
+Il Fotoritocco Umano (Photoshop) altera la TEXTURE (pelle piallata, filtri) o le PROPORZIONI, ma la topologia di base (vestiti, sfondi, iridi) rimane logicamente perfetta.
+
+FASE 1: ANALISI DEI SINTOMI
+Sintomi IA (Errori Topologici):
+- Iridi/Pupille non perfettamente circolari o riflessi asimmetrici e impossibili.
+- Capelli che si fondono magicamente nei vestiti, nella pelle o nello sfondo.
+- Gioielli (orecchini, collane) asimmetrici o che si sciolgono nella carne.
+- Testi o cartelli sullo sfondo incomprensibili ("simboli alieni").
+- Tracolle, lacci o dita che sfidano la fisica, si incastrano o spariscono nel nulla.
+
+Sintomi FOTORITOCCO (Alterazioni Cosmetiche su Base Reale):
+- Pelle "di plastica" (Frequency Separation) senza pori e senza difetti.
+- Occhi e denti sbiancati innaturalmente.
+- Proporzioni umane modificate (Liquify) ma vestiti e oggetti circostanti mantengono una fisica reale e coerente.
+
+FASE 2: ALBERO DECISIONALE RIGIDO
+
+SE [Vedi anche SOLO UNO dei "Sintomi IA (Errori Topologici)"]:
+=> "verdict": "GENERATA_CON_AI" (Non importa quanto la pelle sembri vera, se c'è un errore topologico, è IA. Questo è il tuo punto forte).
+
+SE [NON ci sono errori topologici (gli oggetti fisici, le cinghie, gli sfondi e le pupille hanno totalmente senso)] MA [Vedi "Sintomi FOTORITOCCO" come pelle piallata da filtri beauty o forte makeup digitale]:
+=> "verdict": "MANIPOLATA" (Questa è una modella vera ritoccata da un professionista).
+
+SE E SOLO SE [La fisica è perfetta] E [La pelle, le luci e i difetti sono crudi e naturali al 100% (nessun filtro, pori asimmetrici visibili, rumore reale)]:
+=> "verdict": "ORIGINALE".
+
+RISPONDI ESCLUSIVAMENTE CON UN JSON VALIDO:
 {
-  "verdict": "GENERATA_CON_AI" oppure "MANIPOLATA" oppure "ORIGINALE",
-  "confidence_percentage": <0-100>,
-  "summary": "Analisi forense dettagliata e professionale in italiano.",
-  "anomalies": ["Lista di artefatti", "Sfondo innaturale"],
-  "metadata_inferences": "Deduzioni (es. Illuminazione 3D o Grana fotografica CMOS)"
-}
-Se è genuina, anomalies deve essere [].`;
+  "verdict": "GENERATA_CON_AI" | "MANIPOLATA" | "ORIGINALE",
+  "confidence_percentage": <numero 0-100>,
+  "summary": "<Spiega la tua scelta citando specificamente l'analisi tra Topologia (errori fisici) vs Texture (fotoritocco)>",
+  "anomalies": ["<difetto 1>", "<difetto 2>"],
+  "metadata_inferences": "<note tecniche>"
+}`;
 
   document.getElementById('btnAnalyzeImage').addEventListener('click', async () => {
     if (!currentBase64) return;
@@ -1362,7 +1394,7 @@ Se è genuina, anomalies deve essere [].`;
     editorZone.style.display = 'none'; uploadZone.style.display = 'none';
     
     tabStates.IMAGE = 'LOADING';
-    document.getElementById('loadingText').innerHTML = `Scansione e analisi pixel in corso...<br><span style="color:var(--accent3)">Gemini sta valutando gli artefatti visivi.</span>`;
+    document.getElementById('loadingText').innerHTML = `Scansione e analisi pixel in corso...<br><span style="color:var(--accent3)">L'IA sta valutando la fisica, la geometria e le texture.</span>`;
     renderTabState();
 
     try {
@@ -1375,7 +1407,7 @@ Se è genuina, anomalies deve essere [].`;
       const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
 
       const payload = {
-        contents: [{ parts: [{ text: "Esegui un'analisi forense di questa immagine e restituisci il JSON richiesto." }, { inlineData: { mimeType: mimeType, data: base64Data } }] }],
+        contents: [{ parts: [{ text: "Esegui un'analisi strutturale e forense di questa immagine e restituisci il JSON richiesto." }, { inlineData: { mimeType: mimeType, data: base64Data } }] }],
         systemInstruction: { parts: [{ text: imageSystemPrompt }] }
       };
 
@@ -1427,6 +1459,15 @@ Se è genuina, anomalies deve essere [].`;
       const li = document.createElement('li'); li.textContent = "Nessun artefatto evidente o anomalia visibile rilevata."; anomaliesList.appendChild(li);
     }
   }
+
+  // --- PULSANTE RIPETI ANALISI ---
+  document.getElementById('btnRepeatAnalysis').addEventListener('click', () => {
+    if (currentBase64) {
+      // Ri-simula il click sul pulsante analizza per ripartire col caricamento
+      document.getElementById('btnAnalyzeImage').click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
 
   // --- UTILITY ---
   function extractJSON(text) {
