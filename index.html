@@ -88,7 +88,6 @@
       border-color: var(--accent2);
     }
 
-    /* --- STILI PER IL LAYOUT SUPERIORE (PULSANTE + API) --- */
     .top-controls-wrapper {
       max-width: 900px;
       margin: 0 auto 2.5rem auto;
@@ -940,7 +939,7 @@
       { name: "Current Biology", domain: "cell.com" },
       { name: "PLOS Biology", domain: "journals.plos.org" },
       { name: "Journal of Neuroscience", domain: "jneurosci.org" },
-      { name: "Nature Neuroscience", domain: "nature.com/neuro" },
+      { name: "Nature Neuroscience", nature: "nature.com/neuro" },
       { name: "Ecology Letters", domain: "onlinelibrary.wiley.com" },
       { name: "Conservation Biology", domain: "conbio.onlinelibrary.wiley.com" },
       { name: "National Geographic", domain: "nationalgeographic.com" },
@@ -1123,7 +1122,7 @@
       { name: "DNDi", domain: "dndi.org" },
       { name: "Save the Children", domain: "savethechildren.net" },
       { name: "ActionAid", domain: "actionaid.org" },
-      { name: "CARE", domain: "care-international.org" },
+      { name: "CARE", care: "care-international.org" },
       { name: "Médecins du Monde", domain: "medecinsdumonde.org" },
       { name: "IRC", domain: "rescue.org" },
       { name: "Bread for the World", domain: "bread.org" },
@@ -1220,6 +1219,8 @@
       if (currentMode === 'TEXT') {
         document.getElementById('searchInput').value = '';
         tabStates.TEXT = 'INPUT';
+        document.getElementById('btnManualToggle').style.display = 'inline-block';
+        document.getElementById('advancedManualSearch').style.display = 'none';
       } else {
         resetImageEditor();
         tabStates.IMAGE = 'INPUT';
@@ -1302,30 +1303,36 @@
                 });
             }
         }
-      } catch (e) {
-          console.error("Errore Fact Check Manuale:", e); alert("Errore durante la ricerca manuale.");
-      } finally {
-          manualFcBtn.textContent = 'Cerca 🔍'; manualFcBtn.disabled = false;
-      }
+        renderFactCheckBox(allClaims, [term]);
+    } catch (e) {
+        console.error("Errore Fact Check Manuale:", e); alert("Errore durante la ricerca manuale.");
+    } finally {
+        manualFcBtn.textContent = 'Cerca 🔍'; manualFcBtn.disabled = false;
+    }
   });
 
   const textSystemPrompt = `Sei il 'Debunking Engine', uno strumento di fact-checking ultra-rigoroso basato ESCLUSIVAMENTE su fonti certificate (Whitelist).
 
-GERARCHIA DELLE FONTI (Il tuo algoritmo di fiducia):
-- Livello 1 (Verità Assoluta): Agenzie di Stampa (ANSA, Reuters, AP, AGI) e Dati Ufficiali (ISS, ISTAT, OMS, Gazzetta Ufficiale, Nature, ecc.).
-- Livello 2 (Smentita/Analisi): Siti di Fact-Checking (Facta, Pagella Politica, Bufale.net, Snopes, Open, CICAP, MedBunker, ecc.).
-- Livello 3 (Inaffidabili): Social media, blog, siti clickbait, testate non verificate. Il loro valore è ZERO se non confermate dai livelli superiori.
+GERARCHIA DELLE FONTI:
+- Livello 1 (Verità Assoluta): Agenzie di Stampa (ANSA, Reuters, AP, AGI) e Dati Ufficiali.
+- Livello 2 (Smentita/Analisi): Siti di Fact-Checking (Facta, Pagella Politica, Bufale.net, Snopes, Open, CICAP, MedBunker).
+- Livello 3 (Inaffidabili): Social, blog, clickbait, testate locali non verificate. Valore ZERO se non confermate dai livelli superiori.
 
-REGOLE DI RICERCA E GIUDIZIO (Google Search Grounding):
-1. Individua l'argomento e il tono. Se la notizia è allarmistica, complottista o troppo sensazionale (IS_VIRAL_HOAX = true), DEVI cercare conferme incrociate sui siti di Livello 1 e 2.
-2. Se i siti di Livello 3 diffondono una notizia totalmente inventata e le Agenzie (Livello 1) non ne parlano, la notizia è FALSA o NESSUN_RISCONTRO. Non approvare MAI una notizia basandoti solo sul Livello 3.
-3. GESTIONE DELLA MEZZA VERITÀ (Cruciale per il verdetto PARZIALMENTE_FALSO): Se l'evento di base è realmente accaduto (es. un fermo di polizia, una protesta) ed è riportato dal Livello 1 (es. ANSA), MA la notizia in esame usa termini fuorvianti, faziosi o esagerati (es. definire "terrorista" chi era solo uno "studente"), NON DEVI USARE FALSO. Devi usare PARZIALMENTE_FALSO. Nel summary spiega chiaramente cosa c'è di vero (il fatto di base) e cosa è falso (l'esagerazione o la distorsione), citando le fonti ufficiali.
+REGOLE DI RICERCA E GIUDIZIO:
+1. RICERCA PREVENTIVA: Se la notizia ha toni allarmistici (IS_VIRAL_HOAX = true), verifica attivamente se esistono già smentite nei siti di Livello 2 o conferme nel Livello 1.
+2. DIVIETO LIVELLO 3: Se una notizia bomba è presente solo su blog o social e ignorata dalle Agenzie, è FALSA o NESSUN_RISCONTRO. Non approvarla mai come vera.
+3. REGOLA DEL TITOLO (Clickbait): Valuta sempre la differenza tra il titolo/claim e i fatti reali. Se l'evento di base è vero, MA il titolo è esagerato, fazioso, sensazionalistico o fuorviante, ti è VIETATO usare VERO e FALSO. Usa PARZIALMENTE_FALSO e spiega la discrepanza tra titolo e contenuto.
+4. REGOLA DELLO SPAZIO-TEMPO (Anti-Allucinazione): Fai estrema attenzione a Nomi, Città e Date. Se l'utente chiede di un evento strettamente locale e non trovi riscontri esatti per quel luogo e momento nella Whitelist, NON confonderlo con eventi simili. Usa rigorosamente NESSUN_RISCONTRO. Non inventare collegamenti.
+5. REGOLA DELLA PROPAGANDA E DELL'ODIO: Se un articolo utilizza generalizzazioni razziste, discorsi d'odio (hate speech) o manipola un singolo fatto di cronaca per spingere una palese agenda discriminatoria, ti è SEVERAMENTE VIETATO usare PARZIALMENTE_FALSO. L'intento manipolatorio e tossico invalida la notizia: imponi il verdetto FALSO.
 
 COMPITO:
-1. VERDETTO e SINTESI: Scegli (VERO, FALSO, PARZIALMENTE_FALSO, NESSUN_RISCONTRO). Nel "summary" sii professionale e motiva la scelta specificando in modo esplicito se Agenzie di Stampa o Fact-Checkers confermano o smentiscono l'evento.
-2. CATEGORIA: Scegli una tra: "ATTUALITA_CRONACA", "POLITICA_LEGALE", "ECONOMIA_STATISTICA", "MEDICINA_SCIENZA", "STORIA_CULTURA", "AMBIENTE_NATURA", "DIRITTI_SOCIETA".
-3. IS_VIRAL_HOAX: true o false. Bufala allarmistica/complottista? 'true'.
-4. KEYWORDS IT / EN / FACT_CHECK_QUERY: 2-3 parole per ricerca (pure).
+1. VERDETTO: Scegli (VERO, FALSO, PARZIALMENTE_FALSO, NESSUN_RISCONTRO).
+2. SINTESI (summary): Giustifica la decisione citando in modo professionale le fonti.
+3. CATEGORIA: Scegli tra: "ATTUALITA_CRONACA", "POLITICA_LEGALE", "ECONOMIA_STATISTICA", "MEDICINA_SCIENZA", "STORIA_CULTURA", "AMBIENTE_NATURA", "DIRITTI_SOCIETA".
+4. IS_VIRAL_HOAX: true o false.
+5. KEYWORDS IT: 2-3 parole chiave in italiano.
+6. KEYWORDS EN: 2-3 parole chiave tradotte in inglese.
+7. FACT_CHECK_QUERY: Estrai 1-2 sostantivi primari assoluti (nessun aggettivo) per evitare 0 risultati nei database.
 
 Rispondi ESCLUSIVAMENTE con JSON:
 {
@@ -1433,9 +1440,21 @@ Rispondi ESCLUSIVAMENTE con JSON:
     vBanner.className = `verdict-banner verdict-${finalVerdict}`;
     document.getElementById('summaryText').textContent = data.summary || "Sintesi non disponibile.";
 
-    const cleanKeywords = (kw) => Array.isArray(kw) ? kw.join(" ") : String(kw || "notizia");
-    const keywordsIT = cleanKeywords(data.keywords_it);
-    const keywordsEN = cleanKeywords(data.keywords_en);
+    const cleanKeywords = (kw) => Array.isArray(kw) ? kw.join(" ") : String(kw || "");
+    
+    // Estrazione delle parole purissime
+    let baseKwIT = cleanKeywords(data.fact_check_query);
+    if (!baseKwIT || baseKwIT.length < 3) baseKwIT = cleanKeywords(data.keywords_it);
+    if (!baseKwIT) baseKwIT = "notizia";
+    
+    let baseKwEN = cleanKeywords(data.keywords_en);
+    if (!baseKwEN || baseKwEN.length < 3) baseKwEN = baseKwIT;
+
+    // Iniezione automatica dell'operatore logico OR per ampliare i risultati Google
+    const formatWithOR = (str) => str.split(/[\s,]+/).filter(w => w.trim().length > 0).join(" OR ");
+    const keywordsIT = formatWithOR(baseKwIT);
+    const keywordsEN = formatWithOR(baseKwEN);
+
     const isViralHoax = data.is_viral_hoax === true || data.is_viral_hoax === "true";
     const category = data.category || "DIRITTI_SOCIETA";
     
@@ -1469,7 +1488,7 @@ Rispondi ESCLUSIVAMENTE con JSON:
       const targetKeywords = site.lang === 'en' ? keywordsEN : keywordsIT;
       const card = document.createElement('a');
       card.className = 'card';
-      card.href = `https://www.google.com/search?q=${encodeURIComponent(`${targetKeywords} site:${site.domain}`)}`;
+      card.href = `https://www.google.com/search?q=${encodeURIComponent(`${targetKeywords} site:${site.domain}`)}&tbs=sbd:1`;
       card.target = '_blank'; card.rel = 'noopener noreferrer';
       card.innerHTML = `<div class="card-header"><span class="site-name">${site.icon} ${escapeHTML(site.name)}</span></div>
         <div class="card-title">Cerca <strong>"${escapeHTML(targetKeywords)}"</strong> in questo sito tramite Google.</div>
@@ -1493,7 +1512,7 @@ Rispondi ESCLUSIVAMENTE con JSON:
           const targetKeywords = site.lang === 'en' ? keywordsEN : keywordsIT;
           const card = document.createElement('a');
           card.className = 'card';
-          card.href = `https://www.google.com/search?q=${encodeURIComponent(`${targetKeywords} site:${site.domain}`)}`;
+          card.href = `https://www.google.com/search?q=${encodeURIComponent(`${targetKeywords} site:${site.domain}`)}&tbs=sbd:1`;
           card.target = '_blank'; card.rel = 'noopener noreferrer';
           card.style.borderColor = 'rgba(167, 139, 250, 0.4)';
           card.innerHTML = `<div class="card-header"><span class="site-name" style="color: var(--accent3)">${site.icon} ${escapeHTML(site.name)}</span></div>
