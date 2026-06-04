@@ -88,6 +88,7 @@
       border-color: var(--accent2);
     }
 
+    /* --- STILI PER IL LAYOUT SUPERIORE (PULSANTE + API) --- */
     .top-controls-wrapper {
       max-width: 900px;
       margin: 0 auto 2.5rem auto;
@@ -573,11 +574,12 @@
           <select id="advCategorySelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
             <option value="">-- Seleziona Categoria --</option>
             <option value="FACT_CHECKING">1. Fact-Checking</option>
-            <option value="SCIENZA_DIVULGAZIONE">2. Scienza, Medicina, Natura e Tech</option>
-            <option value="ARCHIVI_ACCADEMICI">3. Studi e Archivi Accademici</option>
-            <option value="STATISTICA_DATI">4. Statistica e Indicatori Sociali</option>
-            <option value="GIURIDICO_LEGALE">5. Giuridico e Legale</option>
-            <option value="ONG_MONITORAGGIO">6. ONG e Monitoraggio</option>
+            <option value="AGENZIE_STAMPA">2. Agenzie di Stampa</option>
+            <option value="SCIENZA_DIVULGAZIONE">3. Scienza, Medicina, Natura e Tech</option>
+            <option value="ARCHIVI_ACCADEMICI">4. Studi e Archivi Accademici</option>
+            <option value="STATISTICA_DATI">5. Statistica e Indicatori Sociali</option>
+            <option value="GIURIDICO_LEGALE">6. Giuridico e Legale</option>
+            <option value="ONG_MONITORAGGIO">7. ONG e Monitoraggio</option>
           </select>
           <select id="advSiteSelect" class="api-input" style="flex: 1; min-width: 200px; padding: 0.8rem; cursor: pointer;">
             <option value="">-- Seleziona prima una Categoria --</option>
@@ -858,6 +860,52 @@
       { name: "Media Bias/Fact Check", domain: "mediabiasfactcheck.com" },
       { name: "NewsGuard", domain: "newsguardtech.com" },
       { name: "First Draft", domain: "firstdraftnews.org" }
+    ],
+    "AGENZIE_STAMPA": [
+      { name: "Reuters (Global)", domain: "reuters.com" },
+      { name: "Associated Press - AP (Global)", domain: "apnews.com" },
+      { name: "Agence France-Presse - AFP (Global)", domain: "afp.com" },
+      { name: "Bloomberg News (Economia)", domain: "bloomberg.com" },
+      { name: "Dow Jones Newswires (Economia)", domain: "dowjones.com" },
+      { name: "EFE (Spagna/Latam)", domain: "efe.com" },
+      { name: "DPA (Germania)", domain: "dpa.com" },
+      { name: "TASS (Russia)", domain: "tass.com" },
+      { name: "Xinhua (Cina)", domain: "xinhuanet.com" },
+      { name: "Kyodo News (Giappone)", domain: "english.kyodonews.net" },
+      { name: "Jiji Press (Giappone)", domain: "jiji.com" },
+      { name: "Yonhap News (Corea del Sud)", domain: "en.yna.co.kr" },
+      { name: "PTI (India)", domain: "ptinews.com" },
+      { name: "ANI (India)", domain: "aninews.in" },
+      { name: "Anadolu Agency (Turchia)", domain: "aa.com.tr" },
+      { name: "IRNA (Iran)", domain: "en.irna.ir" },
+      { name: "WAM (Emirati Arabi)", domain: "wam.ae" },
+      { name: "SPA (Arabia Saudita)", domain: "spa.gov.sa" },
+      { name: "MENA (Egitto)", domain: "mena.org.eg" },
+      { name: "ANSA (Italia)", domain: "ansa.it" },
+      { name: "AGI (Italia)", domain: "agi.it" },
+      { name: "ADNKRONOS (Italia)", domain: "adnkronos.com" },
+      { name: "LaPresse (Italia)", domain: "lapresse.it" },
+      { name: "Agenzia DIRE (Italia)", domain: "dire.it" },
+      { name: "Askanews (Italia)", domain: "askanews.it" },
+      { name: "Agenzia Nova (Italia)", domain: "agenzianova.com" },
+      { name: "Radiocor - Sole 24 Ore (Economia)", domain: "radiocor.ilsole24ore.com" },
+      { name: "MF Dow Jones (Economia)", domain: "mfdowjones.it" },
+      { name: "dpa-AFX (Germania - Economia)", domain: "dpa-afx.de" },
+      { name: "AWP (Svizzera - Finanza)", domain: "awp.ch" },
+      { name: "EurekAlert! / AAAS (Scienza)", domain: "eurekalert.org" },
+      { name: "AlphaGalileo (Scienza)", domain: "alphagalileo.org" },
+      { name: "Newswise (Scienza)", domain: "newswise.com" },
+      { name: "SID (Sport)", domain: "sid.de" },
+      { name: "PA Sport (Sport)", domain: "pamediagroup.com" },
+      { name: "Vatican News (Religione)", domain: "vaticannews.va" },
+      { name: "Agenzia Fides (Religione)", domain: "fides.org" },
+      { name: "SIR (Religione)", domain: "agensir.it" },
+      { name: "CNA (Religione)", domain: "catholicnewsagency.com" },
+      { name: "ENI (Religione)", domain: "oikoumene.org" },
+      { name: "ENDS Europe (Ambiente)", domain: "endseurope.com" },
+      { name: "ENS (Ambiente)", domain: "ens-newswire.com" },
+      { name: "AIC (Istituzioni/Costituzione)", domain: "agenziainfocost.it" },
+      { name: "Agence Europe (UE)", domain: "agenceurope.eu" }
     ],
     "SCIENZA_DIVULGAZIONE": [
       { name: "Nature", domain: "nature.com" },
@@ -1254,23 +1302,30 @@
                 });
             }
         }
-        renderFactCheckBox(allClaims, [term]);
-    } catch (e) {
-        console.error("Errore Fact Check Manuale:", e); alert("Errore durante la ricerca manuale.");
-    } finally {
-        manualFcBtn.textContent = 'Cerca 🔍'; manualFcBtn.disabled = false;
-    }
+      } catch (e) {
+          console.error("Errore Fact Check Manuale:", e); alert("Errore durante la ricerca manuale.");
+      } finally {
+          manualFcBtn.textContent = 'Cerca 🔍'; manualFcBtn.disabled = false;
+      }
   });
 
-  const textSystemPrompt = `Sei il 'Debunking Engine', uno strumento di fact-checking ultra-rigoroso.
+  const textSystemPrompt = `Sei il 'Debunking Engine', uno strumento di fact-checking ultra-rigoroso basato ESCLUSIVAMENTE su fonti certificate (Whitelist).
+
+GERARCHIA DELLE FONTI (Il tuo algoritmo di fiducia):
+- Livello 1 (Verità Assoluta): Agenzie di Stampa (ANSA, Reuters, AP, AGI) e Dati Ufficiali (ISS, ISTAT, OMS, Gazzetta Ufficiale, Nature, ecc.).
+- Livello 2 (Smentita/Analisi): Siti di Fact-Checking (Facta, Pagella Politica, Bufale.net, Snopes, Open, CICAP, MedBunker, ecc.).
+- Livello 3 (Inaffidabili): Social media, blog, siti clickbait, testate non verificate. Il loro valore è ZERO se non confermate dai livelli superiori.
+
+REGOLE DI RICERCA E GIUDIZIO (Google Search Grounding):
+1. Individua l'argomento e il tono. Se la notizia è allarmistica, complottista o troppo sensazionale (IS_VIRAL_HOAX = true), DEVI cercare conferme incrociate sui siti di Livello 1 e 2.
+2. Se i siti di Livello 3 diffondono una notizia totalmente inventata e le Agenzie (Livello 1) non ne parlano, la notizia è FALSA o NESSUN_RISCONTRO. Non approvare MAI una notizia basandoti solo sul Livello 3.
+3. GESTIONE DELLA MEZZA VERITÀ (Cruciale per il verdetto PARZIALMENTE_FALSO): Se l'evento di base è realmente accaduto (es. un fermo di polizia, una protesta) ed è riportato dal Livello 1 (es. ANSA), MA la notizia in esame usa termini fuorvianti, faziosi o esagerati (es. definire "terrorista" chi era solo uno "studente"), NON DEVI USARE FALSO. Devi usare PARZIALMENTE_FALSO. Nel summary spiega chiaramente cosa c'è di vero (il fatto di base) e cosa è falso (l'esagerazione o la distorsione), citando le fonti ufficiali.
+
 COMPITO:
-1. Analizza la notizia fornita (usa Google Search integrato se necessario).
-2. VERDETTO e SINTESI: Fornisci il verdetto (VERO, FALSO, PARZIALMENTE_FALSO, NESSUN_RISCONTRO) e una spiegazione.
-3. CATEGORIA: Scegli una tra queste categorie: "ATTUALITA_CRONACA", "POLITICA_LEGALE", "ECONOMIA_STATISTICA", "MEDICINA_SCIENZA", "STORIA_CULTURA", "AMBIENTE_NATURA", "DIRITTI_SOCIETA".
-4. IS_VIRAL_HOAX: true o false. Bufala allarmistica/complottista? 'true'.
-5. KEYWORDS IT: 2-3 parole chiave in italiano.
-6. KEYWORDS EN: 2-3 parole chiave tradotte in inglese.
-7. FACT_CHECK_QUERY: 1-3 parole purissime.
+1. VERDETTO e SINTESI: Scegli (VERO, FALSO, PARZIALMENTE_FALSO, NESSUN_RISCONTRO). Nel "summary" sii professionale e motiva la scelta specificando in modo esplicito se Agenzie di Stampa o Fact-Checkers confermano o smentiscono l'evento.
+2. CATEGORIA: Scegli una tra: "ATTUALITA_CRONACA", "POLITICA_LEGALE", "ECONOMIA_STATISTICA", "MEDICINA_SCIENZA", "STORIA_CULTURA", "AMBIENTE_NATURA", "DIRITTI_SOCIETA".
+3. IS_VIRAL_HOAX: true o false. Bufala allarmistica/complottista? 'true'.
+4. KEYWORDS IT / EN / FACT_CHECK_QUERY: 2-3 parole per ricerca (pure).
 
 Rispondi ESCLUSIVAMENTE con JSON:
 {
@@ -1581,7 +1636,6 @@ Rispondi ESCLUSIVAMENTE con JSON:
     setTimeout(initCropSystem, 100); btnResetCrop.style.display = 'none';
   });
 
-  // --- NUOVO PROMPT FORENSE: ZONA DI QUARANTENA ESTREMA ---
   const imageSystemPrompt = `Sei un Analista Forense di Immagini ultra-severo. Il tuo obiettivo primario è NON farti ingannare dall'IA. È preferibile scambiare una foto vera per falsa (Falso Positivo) piuttosto che far passare un'IA per vera (Falso Negativo).
 
 ATTENZIONE: Le immagini fornite sono spesso compresse (es. da smartphone). La compressione NASCONDE i micro-errori strutturali tipici dell'IA. Non fidarti mai della "mancanza di difetti evidenti". Inoltre, le IA moderne generano "finti pori della pelle" e "finta grana fotografica" per ingannarti.
