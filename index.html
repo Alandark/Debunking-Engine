@@ -276,9 +276,9 @@
     .search-subtitle em { font-style: normal; color: var(--accent); }
 
     .tabs-container { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
-    .tab-btn { background: rgba(19, 22, 30, 0.6); color: var(--muted); border: 1px solid var(--border); padding: 0.8rem 2rem; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
-    .tab-btn:hover { background: rgba(26, 30, 40, 0.9); color: var(--text); }
-    .tab-btn.active { background: var(--accent); color: var(--bg); border-color: var(--accent); box-shadow: 0 4px 15px rgba(232, 197, 71, 0.3); }
+    .tab-btn { background: var(--accent); color: var(--bg); border: 2px solid transparent; padding: 0.8rem 2rem; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; cursor: pointer; transition: all 0.3s; font-size: 0.9rem; }
+    .tab-btn:hover { box-shadow: 0 4px 15px rgba(232, 197, 71, 0.4); transform: translateY(-2px); }
+    .tab-btn.active { border-color: #2563eb; box-shadow: 0 0 15px rgba(37, 99, 235, 0.6); }
 
     .search-box {
       margin: 0 auto 1.5rem auto;
@@ -714,7 +714,7 @@
 
   <footer>
     <span>Usa Gemini AI (gemini-2.5-flash) & Google Search Grounding</span>
-    <span>Siti interrogati: Agenzie di Stampa, Facta, PubMed, PagellaPolitica, MedBunker...</span>
+    <a href="lista.html" style="color: var(--accent2); text-decoration: none; transition: color 0.3s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--accent2)'">Siti interrogati: Agenzie di Stampa, Fact Checker, Database...(vedi lista completa) ↗</a>
   </footer>
 
 </div>
@@ -1221,6 +1221,7 @@
         tabStates.TEXT = 'INPUT';
         document.getElementById('btnManualToggle').style.display = 'inline-block';
         document.getElementById('advancedManualSearch').style.display = 'none';
+        document.getElementById('moduleText').appendChild(document.getElementById('advancedManualSearch'));
       } else {
         resetImageEditor();
         tabStates.IMAGE = 'INPUT';
@@ -1368,7 +1369,8 @@ Rispondi ESCLUSIVAMENTE con JSON:
       const payload = {
         contents: [{ parts: [{ text: `Utente chiede di verificare: "${query}". Analizza e restituisci il JSON richiesto.` }] }],
         systemInstruction: { parts: [{ text: textSystemPrompt }] },
-        tools: [{ google_search: {} }]
+        tools: [{ google_search: {} }],
+        generationConfig: { temperature: 0 }
       };
 
       const result = await fetchWithRetry(endpointUrl, {
@@ -1707,7 +1709,8 @@ RISPONDI ESCLUSIVAMENTE CON UN JSON VALIDO:
 
       const payload = {
         contents: [{ parts: [{ text: "Esegui un'analisi strutturale e forense di questa immagine e restituisci il JSON richiesto." }, { inlineData: { mimeType: mimeType, data: base64Data } }] }],
-        systemInstruction: { parts: [{ text: imageSystemPrompt }] }
+        systemInstruction: { parts: [{ text: imageSystemPrompt }] },
+        generationConfig: { temperature: 0 }
       };
 
       const result = await fetchWithRetry(endpointUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });

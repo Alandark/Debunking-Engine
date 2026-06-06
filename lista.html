@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debunking Engine | Fonti Certificate</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght=0,700;0,900;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #0d0f14;
+      --surface:     #13161e;
+      --card:        #1a1e28;
+      --border:      #252b3b;
+      --accent:      #e8c547;
+      --accent2:     #4fc3f7;
+      --accent3:     #a78bfa;
+      --text:        #e2e8f0;
+      --muted:       #7a8499;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      background-image: url('sfondoDE.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: 'IBM Plex Sans', sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-color: rgba(13, 15, 20, 0.85);
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+    header {
+      padding: 4rem 0 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.95rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .main-logo {
+      max-width: 90vw;
+      width: 260px;
+      height: auto;
+      margin: 0.5rem auto 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border);
+      display: block;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .main-logo:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(79, 195, 247, 0.2);
+      border-color: var(--accent2);
+    }
+
+    .nav-controls {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 3rem;
+    }
+
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(19, 22, 30, 0.6);
+      color: var(--text);
+      border: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .btn-back:hover {
+      background: rgba(26, 30, 40, 0.9);
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(232, 197, 71, 0.2);
+    }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 900;
+      line-height: 1.2;
+      color: #fff;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+    .page-title em { font-style: normal; color: var(--accent); }
+
+    .page-subtitle {
+      font-family: 'Playfair Display', serif;
+      text-align: center;
+      margin: 0 auto 3rem auto;
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 800px;
+      font-weight: 400;
+      line-height: 1.7;
+    }
+
+    /* Stili specifici per l'elenco fonti */
+    .source-box {
+      background: rgba(19, 22, 30, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2.5rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .source-box h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    
+    .source-box h2 .icon {
+      color: var(--accent);
+    }
+
+    .category-group {
+      margin-bottom: 2rem;
+    }
+    
+    .category-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .category-group h3 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 1rem;
+      background: rgba(79, 195, 247, 0.05);
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent2);
+    }
+
+    .subcategory-group h4 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent3);
+      margin: 1.5rem 0 0.8rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .source-list {
+      list-style: none;
+      columns: 1;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .source-list { columns: 2; }
+    }
+
+    .source-list li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.95rem;
+      color: var(--text);
+      break-inside: avoid-column;
+      line-height: 1.4;
+    }
+
+    .source-list li::before {
+      content: '■';
+      position: absolute;
+      left: 0;
+      top: 0.15rem;
+      font-size: 0.7rem;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+
+    .source-list li:hover::before {
+      color: var(--accent);
+    }
+
+    .source-list li span.desc {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-style: italic;
+    }
+
+    footer { 
+      margin-top: 5rem; 
+      padding-top: 2rem; 
+      border-top: 1px solid var(--border); 
+      font-size: .78rem; 
+      color: var(--muted); 
+      font-family: 'IBM Plex Mono', monospace; 
+      text-align: center;
+    }
+
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="eyebrow">Database Fonti</div>
+    <img src="logoDE.jpg" alt="Debunking Engine Logo" class="main-logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNjAiIGhlaWdodD0iODAiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMxYTFlMjgiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZmlsbD0iI2U4YzU0NyIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5MT0dPPC90ZXh0Pjwvc3ZnPg==';"/>
+  </header>
+
+  <div class="nav-controls">
+    <a href="index.html" class="btn-back">← Torna all'App</a>
+  </div>
+
+  <h1 class="page-title">Database <em>Fonti Integrate</em></h1>
+  <p class="page-subtitle">Elenco completo delle agenzie di stampa, istituti di ricerca, database accademici e siti di fact-checking interrogati dal sistema di Intelligenza Artificiale per la verifica delle informazioni.</p>
+
+  <!-- SEZIONE: AGENZIE DI STAMPA -->
+  <div class="source-box">
+    <h2><span class="icon">🗞️</span> Agenzie di Stampa Accreditate</h2>
+    
+    <div class="category-group">
+      <h3>1. Agenzie Internazionali — Le "Big Three"</h3>
+      <ul class="source-list">
+        <li>Reuters <span class="desc">(UK/USA — Thomson Reuters)</span></li>
+        <li>Associated Press — AP <span class="desc">(USA)</span></li>
+        <li>Agence France-Presse — AFP <span class="desc">(Francia)</span></li>
+      </ul>
+    </div>
+
+    <div class="category-group">
+      <h3>2. Agenzie Internazionali e Multinazionali</h3>
+      <ul class="source-list">
+        <li>Bloomberg News <span class="desc">(USA — economia e finanza)</span></li>
+        <li>Dow Jones Newswires / AP-Dow Jones <span class="desc">(USA — finanza)</span></li>
+        <li>EFE <span class="desc">(Spagna — area ispanica e lusofona)</span></li>
+        <li>DPA — Deutsche Presse-Agentur <span class="desc">(Germania)</span></li>
+        <li>TASS <span class="desc">(Russia — agenzia di Stato)</span></li>
+        <li>Xinhua <span class="desc">(Cina — agenzia di Stato)</span></li>
+        <li>Kyodo News <span class="desc">(Giappone — cooperativa)</span></li>
+        <li>Jiji Press <span class="desc">(Giappone)</span></li>
+        <li>Yonhap News Agency <span class="desc">(Corea del Sud)</span></li>
+        <li>PTI — Press Trust of India <span class="desc">(India — cooperativa)</span></li>
+        <li>ANI — Asian News International <span class="desc">(India)</span></li>
+        <li>Anadolu Agency — AA <span class="desc">(Turchia)</span></li>
+        <li>IRNA — Islamic Republic News Agency <span class="desc">(Iran — agenzia di Stato)</span></li>
+        <li>WAM — Emirates News Agency <span class="desc">(EAU — agenzia di Stato)</span></li>
+        <li>SPA — Saudi Press Agency <span class="desc">(Arabia Saudita — agenzia di Stato)</span></li>
+        <li>MENA — Middle East News Agency <span class="desc">(Egitto — agenzia di Stato)</span></li>
+      </ul>
+    </div>
+
+    <div class="category-group">
+      <h3>3. Italia</h3>
+      <ul class="source-list">
+        <li>ANSA — Agenzia Nazionale Stampa Associata</li>
+        <li>AGI — Agenzia Giornalistica Italia</li>
+        <li>ADNKRONOS</li>
+        <li>LaPresse</li>
+        <li>Agenzia DIRE</li>
+        <li>Askanews</li>
+        <li>Agenzia Nova</li>
+        <li>Radiocor <span class="desc">(Il Sole 24 Ore — economia e finanza)</span></li>
+        <li>MF Dow Jones News <span class="desc">(finanza — Class CNBC)</span></li>
+        <li>Agenzia Fides <span class="desc">(Vaticano — attività missionaria)</span></li>
+        <li>SIR — Servizio Informazione Religiosa <span class="desc">(CEI)</span></li>
+      </ul>
+    </div>
+
+    <div class="category-group">
+      <h3>4. Agenzie Tematiche Specializzate</h3>
+      
+      <div class="subcategory-group">
+        <h4>Economia, Finanza e Mercati</h4>
+        <ul class="source-list">
+          <li>Bloomberg News</li>
+          <li>Reuters Finance</li>
+          <li>Dow Jones Newswires</li>
+          <li>Radiocor / Il Sole 24 Ore <span class="desc">(Italia)</span></li>
+          <li>dpa-AFX <span class="desc">(Germania — economia)</span></li>
+          <li>AWP — Agency for Financial Information <span class="desc">(Svizzera)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Scienza e Tecnologia</h4>
+        <ul class="source-list">
+          <li>EurekAlert! / Science News Wire <span class="desc">(AAAS)</span></li>
+          <li>AlphaGalileo <span class="desc">(Europa — scienze)</span></li>
+          <li>Newswise <span class="desc">(USA — università e istituti di ricerca)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Sport</h4>
+        <ul class="source-list">
+          <li>SID — Sport-Informations-Dienst <span class="desc">(Germania)</span></li>
+          <li>PA Sport <span class="desc">(UK)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Religiose e Vaticano</h4>
+        <ul class="source-list">
+          <li>Vatican News / Sala Stampa della Santa Sede</li>
+          <li>Agenzia Fides <span class="desc">(Vaticano)</span></li>
+          <li>SIR — Servizio Informazione Religiosa <span class="desc">(CEI, Italia)</span></li>
+          <li>CNA — Catholic News Agency</li>
+          <li>ENI — Ecumenical News International <span class="desc">(WCC)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Ambiente</h4>
+        <ul class="source-list">
+          <li>ENDS Europe <span class="desc">(UK/EU — ambiente e politiche)</span></li>
+          <li>ENS — Environment News Service</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Diritto e Istituzioni</h4>
+        <ul class="source-list">
+          <li>AIC — Agenzia Informazioni Costituzionali <span class="desc">(Italia)</span></li>
+          <li>Agence Europe <span class="desc">(UE — specializzata in affari europei)</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEZIONE: SITI AFFIDABILI E UFFICIALI -->
+  <div class="source-box">
+    <h2><span class="icon">🏛️</span> Siti Affidabili e Ufficiali</h2>
+
+    <div class="category-group">
+      <h3>1. Fact-Checking</h3>
+      <ul class="source-list">
+        <li>CICAP <span class="desc">(Comitato Italiano per il Controllo delle Affermazioni sulle Pseudoscienze)</span></li>
+        <li>CICAP Edizioni / Scienza & Paranormale</li>
+        <li>Facta <span class="desc">(fact-checking italiano, Pagella Politica)</span></li>
+        <li>Pagella Politica</li>
+        <li>MedBunker <span class="desc">(dott. Salvo Di Grazia)</span></li>
+        <li>Open Online <span class="desc">(fact-checking, Open)</span></li>
+        <li>Bufale.net</li>
+        <li>Il Fatto Verificato</li>
+        <li>Snopes</li>
+        <li>PolitiFact</li>
+        <li>FactCheck.org</li>
+        <li>Full Fact <span class="desc">(UK)</span></li>
+        <li>AFP Factuel</li>
+        <li>Correctiv <span class="desc">(Germania)</span></li>
+        <li>EFE Verifica <span class="desc">(Spagna)</span></li>
+        <li>Maldita.es <span class="desc">(Spagna)</span></li>
+        <li>Les Décodeurs — Le Monde <span class="desc">(Francia)</span></li>
+        <li>BOOM Live Fact Check <span class="desc">(India)</span></li>
+        <li>Africa Check</li>
+        <li>IFCN — International Fact-Checking Network</li>
+        <li>Duke Reporters' Lab <span class="desc">(database globale fact-checkers)</span></li>
+        <li>Media Bias/Fact Check</li>
+        <li>NewsGuard</li>
+        <li>First Draft <span class="desc">(disinformazione online)</span></li>
+      </ul>
+    </div>
+
+    <div class="category-group">
+      <h3>2. Scienza, Medicina, Storia, Natura e Tecnologia</h3>
+      
+      <div class="subcategory-group">
+        <h4>Scienze Generali</h4>
+        <ul class="source-list">
+          <li>Nature</li>
+          <li>Science <span class="desc">(AAAS)</span></li>
+          <li>PNAS — Proceedings of the National Academy of Sciences</li>
+          <li>Cell</li>
+          <li>Scientific Reports <span class="desc">(Nature)</span></li>
+          <li>eLife</li>
+          <li>PLOS ONE</li>
+          <li>F1000Research</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Medicina e Salute</h4>
+        <ul class="source-list">
+          <li>The New England Journal of Medicine <span class="desc">(NEJM)</span></li>
+          <li>The Lancet</li>
+          <li>JAMA — Journal of the American Medical Association</li>
+          <li>BMJ — British Medical Journal</li>
+          <li>Annals of Internal Medicine</li>
+          <li>CMAJ — Canadian Medical Association Journal</li>
+          <li>Mayo Clinic Proceedings</li>
+          <li>American Journal of Public Health</li>
+          <li>Epidemiology & Infection <span class="desc">(Cambridge)</span></li>
+          <li>Cochrane Library <span class="desc">(revisioni sistematiche)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Fisica, Chimica, Matematica</h4>
+        <ul class="source-list">
+          <li>Physical Review Letters <span class="desc">(APS)</span></li>
+          <li>Physical Review <span class="desc">(famiglia APS)</span></li>
+          <li>Journal of the American Chemical Society <span class="desc">(JACS)</span></li>
+          <li>Angewandte Chemie <span class="desc">(Wiley)</span></li>
+          <li>Annals of Mathematics <span class="desc">(Princeton)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Tecnologia e Informatica</h4>
+        <ul class="source-list">
+          <li>IEEE Spectrum</li>
+          <li>Communications of the ACM</li>
+          <li>MIT Technology Review</li>
+          <li>arXiv <span class="desc">(preprint server — fisica, matematica, CS, biologia)</span></li>
+          <li>Wired <span class="desc">(edizione internazionale)</span></li>
+          <li>Ars Technica</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Biologia, Ecologia e Neuroscienze</h4>
+        <ul class="source-list">
+          <li>Current Biology</li>
+          <li>PLOS Biology</li>
+          <li>Journal of Neuroscience</li>
+          <li>Nature Neuroscience</li>
+          <li>Ecology Letters</li>
+          <li>Conservation Biology</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Natura e Ambiente</h4>
+        <ul class="source-list">
+          <li>National Geographic</li>
+          <li>iNaturalist</li>
+          <li>WWF Science</li>
+          <li>Nature Climate Change</li>
+          <li>Global Change Biology</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Storia</h4>
+        <ul class="source-list">
+          <li>The American Historical Review</li>
+          <li>Past & Present</li>
+          <li>Journal of World History</li>
+          <li>Rivista Storica Italiana</li>
+          <li>History Today</li>
+          <li>Annales. Histoire, Sciences Sociales</li>
+          <li>Treccani — Enciclopedia Storica</li>
+          <li>Encyclopedia Britannica</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="category-group">
+      <h3>3. Studi e Archivi Accademici</h3>
+      
+      <div class="subcategory-group">
+        <h4>Multidisciplinari</h4>
+        <ul class="source-list">
+          <li>JSTOR <span class="desc">(archivio riviste umanistiche, scienze sociali, scienze)</span></li>
+          <li>Google Scholar</li>
+          <li>BASE — Bielefeld Academic Search Engine</li>
+          <li>OpenAIRE <span class="desc">(open access europeo)</span></li>
+          <li>CORE <span class="desc">(aggregatore open access)</span></li>
+          <li>Semantic Scholar <span class="desc">(Allen Institute for AI)</span></li>
+          <li>Academia.edu</li>
+          <li>ResearchGate</li>
+          <li>Zenodo <span class="desc">(repository CERN/EU)</span></li>
+          <li>Internet Archive — Scholar</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Medicina e Scienze della Vita</h4>
+        <ul class="source-list">
+          <li>PubMed / MEDLINE <span class="desc">(NLM)</span></li>
+          <li>PubMed Central <span class="desc">(PMC, open access)</span></li>
+          <li>Europe PMC</li>
+          <li>ClinicalTrials.gov</li>
+          <li>WHO IRIS <span class="desc">(archivio OMS)</span></li>
+          <li>bioRxiv <span class="desc">(preprint biologia)</span></li>
+          <li>medRxiv <span class="desc">(preprint medicina)</span></li>
+          <li>ClinicalKey <span class="desc">(Elsevier)</span></li>
+          <li>Cochrane Library</li>
+          <li>UpToDate</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Scienze Fisiche e Ingegneria</h4>
+        <ul class="source-list">
+          <li>arXiv</li>
+          <li>IEEE Xplore</li>
+          <li>ACM Digital Library</li>
+          <li>Scopus <span class="desc">(Elsevier)</span></li>
+          <li>Web of Science</li>
+          <li>NASA ADS <span class="desc">(Astrophysics Data System)</span></li>
+          <li>ChemRxiv <span class="desc">(preprint chimica)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Scienze Sociali, Economia, Politica</h4>
+        <ul class="source-list">
+          <li>SSRN — Social Science Research Network</li>
+          <li>EconPapers</li>
+          <li>NBER — National Bureau of Economic Research</li>
+          <li>IDEAS/RePEC</li>
+          <li>PhilPapers <span class="desc">(filosofia)</span></li>
+          <li>PsycINFO / APA PsycNet</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Storia, Umanistica e Archivistica</h4>
+        <ul class="source-list">
+          <li>JSTOR</li>
+          <li>Project MUSE <span class="desc">(letteratura, umanistica)</span></li>
+          <li>Europeana <span class="desc">(patrimonio digitale europeo)</span></li>
+          <li>Archivio di Stato <span class="desc">(Italia)</span></li>
+          <li>Archivio Storico della Camera dei Deputati</li>
+          <li>Digital Public Library of America <span class="desc">(DPLA)</span></li>
+          <li>Gallica <span class="desc">(BnF — Bibliothèque nationale de France)</span></li>
+          <li>Perseus Digital Library <span class="desc">(classici greci e latini)</span></li>
+          <li>HathiTrust Digital Library</li>
+          <li>Library of Congress Digital Collections</li>
+          <li>Internet Archive</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Diritto e Giurisprudenza Accademica</h4>
+        <ul class="source-list">
+          <li>HeinOnline <span class="desc">(diritto internazionale)</span></li>
+          <li>SSRN Legal Scholarship</li>
+          <li>EUR-Lex <span class="desc">(diritto UE)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="category-group">
+      <h3>4. Siti di Statistica e Indicatori Sociali</h3>
+
+      <div class="subcategory-group">
+        <h4>Italia</h4>
+        <ul class="source-list">
+          <li>ISTAT — Istituto Nazionale di Statistica</li>
+          <li>ISS — Istituto Superiore di Sanità</li>
+          <li>Banca d'Italia — statistiche</li>
+          <li>MEF — Ministero dell'Economia e delle Finanze</li>
+          <li>INPS — statistiche previdenziali</li>
+          <li>Istituto Nazionale per la Valutazione del Sistema Educativo <span class="desc">(INVALSI)</span></li>
+          <li>OPENPOLIS</li>
+          <li>Fondazione GIMBE</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Europa</h4>
+        <ul class="source-list">
+          <li>Eurostat <span class="desc">(statistica UE)</span></li>
+          <li>Banca Centrale Europea — statistiche</li>
+          <li>OCSE/OECD</li>
+          <li>OCSE Data</li>
+          <li>Osservatorio Europeo delle Droghe <span class="desc">(EMCDDA/EUDA)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Mondo</h4>
+        <ul class="source-list">
+          <li>World Bank Open Data</li>
+          <li>ONU / UN Data</li>
+          <li>OMS / WHO Data Observatory</li>
+          <li>IMF Data</li>
+          <li>FAO FAOSTAT</li>
+          <li>UNDP Human Development Reports</li>
+          <li>UNHCR Data <span class="desc">(rifugiati)</span></li>
+          <li>ILO — Organizzazione Internazionale del Lavoro</li>
+          <li>Our World in Data</li>
+          <li>Gapminder</li>
+          <li>Statista</li>
+          <li>Global Health Observatory <span class="desc">(OMS)</span></li>
+          <li>UNICEF Data</li>
+          <li>World Inequality Database <span class="desc">(WID)</span></li>
+          <li>V-Dem Institute <span class="desc">(dati democratici)</span></li>
+          <li>Worldwide Governance Indicators <span class="desc">(World Bank)</span></li>
+          <li>Climate Watch <span class="desc">(dati climatici)</span></li>
+          <li>Global Carbon Project</li>
+          <li>Numbeo <span class="desc">(costo della vita)</span></li>
+          <li>Index Mundi</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="category-group">
+      <h3>5. Giuridico e Legale</h3>
+
+      <div class="subcategory-group">
+        <h4>Italia</h4>
+        <ul class="source-list">
+          <li>Gazzetta Ufficiale della Repubblica Italiana</li>
+          <li>Normattiva <span class="desc">(testi normativi consolidati)</span></li>
+          <li>Corte di Cassazione</li>
+          <li>Corte Costituzionale</li>
+          <li>Consiglio di Stato</li>
+          <li>TAR — Tribunali Amministrativi Regionali</li>
+          <li>Consiglio Superiore della Magistratura <span class="desc">(CSM)</span></li>
+          <li>Ministero della Giustizia</li>
+          <li>Camera dei Deputati — normativa</li>
+          <li>Senato della Repubblica — normativa</li>
+          <li>Autorità Garante della Concorrenza e del Mercato <span class="desc">(AGCM)</span></li>
+          <li>Garante Privacy</li>
+          <li>Autorità Nazionale Anticorruzione <span class="desc">(ANAC)</span></li>
+          <li>DeJure <span class="desc">(Giuffrè — massimario, riviste giuridiche)</span></li>
+          <li>Altalex <span class="desc">(portale giuridico)</span></li>
+          <li>Brocardi <span class="desc">(commentario normativo)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Unione Europea</h4>
+        <ul class="source-list">
+          <li>EUR-Lex <span class="desc">(normativa UE)</span></li>
+          <li>Corte di Giustizia dell'Unione Europea</li>
+          <li>Registro federale degli atti UE</li>
+          <li>EDPS — Garante europeo della protezione dei dati</li>
+          <li>Autorità Bancaria Europea <span class="desc">(EBA)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Internazionale</h4>
+        <ul class="source-list">
+          <li>UNHCR <span class="desc">(rifugiati, diritto internazionale)</span></li>
+          <li>Corte Penale Internazionale <span class="desc">(CPI/ICC)</span></li>
+          <li>Corte Internazionale di Giustizia <span class="desc">(CIG/ICJ)</span></li>
+          <li>Corte Europea dei Diritti dell'Uomo <span class="desc">(CEDU)</span></li>
+          <li>Commissione di Venezia <span class="desc">(Consiglio d'Europa)</span></li>
+          <li>UNODC — Ufficio ONU per la droga e il crimine</li>
+          <li>WTO — Organizzazione Mondiale del Commercio</li>
+          <li>ILO NORMLEX <span class="desc">(standard internazionali del lavoro)</span></li>
+          <li>WIPO <span class="desc">(Proprietà Intellettuale)</span></li>
+          <li>UN Treaty Collection</li>
+          <li>HeinOnline</li>
+          <li>Refworld <span class="desc">(UNHCR, documenti giuridici)</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="category-group">
+      <h3>6. Organizzazioni Non Governative e Monitoraggio</h3>
+
+      <div class="subcategory-group">
+        <h4>Democrazia, Libertà e Diritti Politici</h4>
+        <ul class="source-list">
+          <li>Freedom House</li>
+          <li>V-Dem Institute</li>
+          <li>Varieties of Democracy <span class="desc">(V-Dem)</span></li>
+          <li>Transparency International</li>
+          <li>Corruption Perceptions Index <span class="desc">(TI)</span></li>
+          <li>The Economist Intelligence Unit — Democracy Index</li>
+          <li>International IDEA</li>
+          <li>Electoral Integrity Project</li>
+          <li>CIVICUS Monitor</li>
+          <li>Liberties.eu</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Libertà di Stampa e Informazione</h4>
+        <ul class="source-list">
+          <li>Reporters Without Borders / RSF — Reporters Sans Frontières</li>
+          <li>Committee to Protect Journalists <span class="desc">(CPJ)</span></li>
+          <li>International Press Institute <span class="desc">(IPI)</span></li>
+          <li>Index on Censorship</li>
+          <li>Media Freedom Rapid Response <span class="desc">(MFRR)</span></li>
+          <li>Ossigeno per l'Informazione <span class="desc">(Italia)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Diritti Umani</h4>
+        <ul class="source-list">
+          <li>Amnesty International</li>
+          <li>Human Rights Watch</li>
+          <li>FIDH — Fédération Internationale pour les Droits Humains</li>
+          <li>Front Line Defenders</li>
+          <li>Pax Christi International</li>
+          <li>International Federation for Human Rights</li>
+          <li>OHCHR — Alto Commissariato ONU per i Diritti Umani</li>
+          <li>Oxfam International</li>
+          <li>Global Witness</li>
+          <li>Article 19 <span class="desc">(libertà di espressione)</span></li>
+          <li>Privacy International</li>
+          <li>Electronic Frontier Foundation <span class="desc">(EFF)</span></li>
+          <li>Human Rights First</li>
+          <li>Human Rights Without Frontiers</li>
+          <li>Equal Rights Trust</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Rifugiati e Migranti</h4>
+        <ul class="source-list">
+          <li>UNHCR</li>
+          <li>IOM — Organizzazione Internazionale per le Migrazioni</li>
+          <li>Mixed Migration Centre</li>
+          <li>ECRE — Consiglio Europeo per i Rifugiati</li>
+          <li>Asylum Information Database <span class="desc">(AIDA)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Ambiente e Clima</h4>
+        <ul class="source-list">
+          <li>Greenpeace International</li>
+          <li>WWF — World Wide Fund for Nature</li>
+          <li>Friends of the Earth International</li>
+          <li>Earthjustice</li>
+          <li>Carbon Disclosure Project <span class="desc">(CDP)</span></li>
+          <li>Global Forest Watch</li>
+          <li>Climate Action Tracker</li>
+          <li>Legambiente <span class="desc">(Italia)</span></li>
+          <li>Rainforest Alliance</li>
+          <li>IUCN — Unione Internazionale per la Conservazione della Natura</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Salute Globale</h4>
+        <ul class="source-list">
+          <li>MSF — Médecins Sans Frontières</li>
+          <li>Partners in Health</li>
+          <li>PATH</li>
+          <li>GAVI — Alleanza Vaccini</li>
+          <li>The Global Fund</li>
+          <li>DNDi — Drugs for Neglected Diseases initiative</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Sviluppo e Povertà</h4>
+        <ul class="source-list">
+          <li>Oxfam International</li>
+          <li>Save the Children</li>
+          <li>ActionAid International</li>
+          <li>CARE International</li>
+          <li>Médecins du Monde</li>
+          <li>International Rescue Committee <span class="desc">(IRC)</span></li>
+          <li>Bread for the World</li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Pace, Conflitti e Sicurezza</h4>
+        <ul class="source-list">
+          <li>International Crisis Group</li>
+          <li>SIPRI — Stockholm International Peace Research Institute</li>
+          <li>Geneva Academy of International Humanitarian Law</li>
+          <li>ICRC — Comitato Internazionale della Croce Rossa</li>
+          <li>ACLED — Armed Conflict Location & Event Data Project</li>
+          <li>Uppsala Conflict Data Program <span class="desc">(UCDP)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Anticorruzione e Trasparenza</h4>
+        <ul class="source-list">
+          <li>Transparency International</li>
+          <li>GRECO — Group of States against Corruption <span class="desc">(Consiglio d'Europa)</span></li>
+          <li>Open Government Partnership</li>
+          <li>FATF — Financial Action Task Force</li>
+          <li>Global Integrity</li>
+          <li>OpenSecrets <span class="desc">(USA)</span></li>
+          <li>Follow The Money <span class="desc">(UE)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Monitoraggio Razzismo e Discriminazioni</h4>
+        <ul class="source-list">
+          <li>ECRI — Commissione europea contro il razzismo <span class="desc">(Consiglio d'Europa)</span></li>
+          <li>FRA — Agenzia dell'UE per i Diritti Fondamentali</li>
+          <li>COSPE <span class="desc">(Italia)</span></li>
+          <li>Centro FARE <span class="desc">(Italia)</span></li>
+          <li>ADL — Anti-Defamation League</li>
+          <li>Southern Poverty Law Center <span class="desc">(SPLC)</span></li>
+        </ul>
+      </div>
+
+      <div class="subcategory-group">
+        <h4>Think Tank e Ricerca Indipendente</h4>
+        <ul class="source-list">
+          <li>Brookings Institution</li>
+          <li>Council on Foreign Relations <span class="desc">(CFR)</span></li>
+          <li>Carnegie Endowment for International Peace</li>
+          <li>Chatham House</li>
+          <li>IAI — Istituto Affari Internazionali <span class="desc">(Italia)</span></li>
+          <li>ISPI — Istituto per gli Studi di Politica Internazionale <span class="desc">(Italia)</span></li>
+          <li>Bruegel <span class="desc">(economia europea)</span></li>
+          <li>European Council on Foreign Relations <span class="desc">(ECFR)</span></li>
+          <li>RAND Corporation</li>
+          <li>Wilson Center</li>
+          <li>Overseas Development Institute <span class="desc">(ODI)</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Questa pagina contiene esclusivamente i nomi delle fonti consultate, suddivisi per aree tematiche.</span>
+    <span>Ultimo aggiornamento lista: Giugno 2026.</span>
+  </footer>
+
+</div>
+</body>
+</html>
